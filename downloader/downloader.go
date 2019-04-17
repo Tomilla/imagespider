@@ -1,13 +1,15 @@
 package downloader
 
 import (
-	"fmt"
+	"crypto/tls"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Worker struct {
@@ -21,15 +23,17 @@ func NewWorker(workCh chan []*model.Topic) {
 		workCh,
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 		go w.Work()
 	}
 }
 
 func (w *Worker) Work() {
-	tps := <-w.workCh
-	for _, t := range tps {
-		w.download(t)
+	for {
+		tps := <-w.workCh
+		for _, t := range tps {
+			w.download(t)
+		}
 	}
 
 }
@@ -39,23 +43,43 @@ func (w *Worker) download(tp *model.Topic) {
 	if err := os.MkdirAll(baseFolder, 0700); err != nil {
 		panic(err)
 	}
-	fmt.Println("Saving image file : ", baseFolder)
 	for i, url := range tp.Images {
 		err := w.downloadWithPath(url, baseFolder, tp.Name, i)
 		if err != nil {
-			fmt.Println("Error download ", url)
+
+			log.Println("#######Error download ", err, url)
+			//panic(err)
 			continue
 		}
 	}
+	log.Println("downloaded ", tp.Name, "-->", len(tp.Images))
 }
 func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error {
-	fmt.Println("Download link ", url)
-	resp, err := http.Get(url)
+	//log.Println("Download link ", url)
+	fileName := w.getFileName(baseFolder, name, index)
+	//fmt.Println(fileName)
+	if pathExist(fileName) {
+		return nil
+	}
+	//resp, err := http.Get(url)
+	//@@@@@@@@@@@@@@@@@
+	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{
+		Timeout:   15 * time.Second,
+		Transport: tr, //解决x509: certificate signed by unknown authority
+	}
+	req, err := http.NewRequest("GET", url, nil)
+	resp, err := client.Do(req)
+
+	//@@@@@@@@@@@@@@@@@
+
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	fileName := w.getFileName(baseFolder, name, index)
+
 	out, err := os.Create(fileName)
 	if err != nil {
 		return err
@@ -72,4 +96,13 @@ func (w *Worker) getFileName(baseFolder, name string, index int) string {
 	}
 	return baseFolder + strconv.Itoa(index) + ".jpg"
 
+}
+
+// golang新版本的应该
+func pathExist(_path string) bool {
+	_, err := os.Stat(_path)
+	if err != nil && os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

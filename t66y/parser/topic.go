@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"fmt"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
+	"log"
 	"regexp"
 )
 
@@ -11,24 +11,24 @@ import (
 //var imageRe = regexp.MustCompile(`['"](http(s)?://[^'"]+jpg)["']`)
 var imageRe = regexp.MustCompile(`data-(src|link)=['"](http[s]?://[^'"]+)['"]`)
 var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
-var ImageCh = make(chan []*model.Topic)
+var ImageCh = make(chan []*model.Topic, 20)
 
 func ParseTopic(contents []byte) engine.ParseResult {
 
-	fmt.Printf("ParseTopic ")
+	log.Printf("ParseTopic ")
 
 	imageMatches := imageRe.FindAllSubmatch(contents, -1)
 	if imageMatches == nil {
 		panic("nil images")
 	}
-	fmt.Println("matches -->  ", len(imageMatches))
-	//result := engine.ParseResult{}
+
 	titleMatch := titleRe.FindSubmatch(contents)
 
 	t := &model.Topic{}
 	name := string(titleMatch[1])
 
 	t.Name = normalizeName(name)
+	log.Println("["+t.Name+"]"+" matches -->  ", len(imageMatches), "images")
 
 	for _, m := range imageMatches {
 		t.Images = append(t.Images, string(m[2]))

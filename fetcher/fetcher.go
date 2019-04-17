@@ -2,13 +2,16 @@ package fetcher
 
 import (
 	"bufio"
+	"crypto/tls"
 	"fmt"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 )
 
 type Fetcher interface {
@@ -16,13 +19,25 @@ type Fetcher interface {
 }
 
 func Fetch(url string) ([]byte, error) {
-	res, err := http.Get(url)
+	//@@@@@@@@@@@@@@@@@@@@@@
+	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{
+		Timeout:   15 * time.Second,
+		Transport: tr, //解决x509: certificate signed by unknown authority
+	}
+	req, err := http.NewRequest("GET", url, nil)
+	res, err := client.Do(req)
+
+	//res, err := http.Get(url)
+	//@@@@@@@@@@@@@@@@@@@@@@@@
 	if err != nil {
 		//panic(err)
 		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		fmt.Println("Error: status code", res.StatusCode)
+		log.Println("Error: status code", res.StatusCode)
 		return nil, fmt.Errorf("wrong status code: %d", res.StatusCode)
 	}
 	defer res.Body.Close()

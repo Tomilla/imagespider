@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler/util/agent/my"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
 
 	"regexp"
@@ -16,10 +17,11 @@ func ParseTopicList(contents []byte) engine.ParseResult {
 	matches := topicListRe.FindAllSubmatch(contents, -1)
 	result := engine.ParseResult{}
 	for _, m := range matches {
-		result.Items = append(result.Items, "City: "+string(m[2]))
+		result.Items = append(result.Items, "topic: "+string(m[2]))
 		result.Requests = append(result.Requests, engine.Request{
 			Url: "http://t66y.com/" + string(m[1]),
 			//ParserFunc: ParseTopic,
+			Agent:      my.NewAgent(),
 			ParserFunc: ParseTopic,
 			Name:       string(m[2]),
 		})
