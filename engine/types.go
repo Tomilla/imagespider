@@ -3,6 +3,7 @@ package engine
 type Request struct {
 	Url        string
 	ParserFunc func([]byte) ParseResult
+	Name       string
 }
 type ParseResult struct {
 	Requests []Request

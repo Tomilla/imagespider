@@ -21,6 +21,7 @@ func ParseTopicList(contents []byte) engine.ParseResult {
 			Url: "http://t66y.com/" + string(m[1]),
 			//ParserFunc: ParseTopic,
 			ParserFunc: ParseTopic,
+			Name:       string(m[2]),
 		})
 
 	}

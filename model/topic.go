@@ -1,6 +1,6 @@
 package model
 
-type Topic  struct{
-	Name string
-	Iamges []string
+type Topic struct {
+	Name   string
+	Images []string
 }
