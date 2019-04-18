@@ -13,6 +13,10 @@ type ParseResult struct {
 	Items    []interface{}
 }
 
+func NewParseResult(items []interface{}) *ParseResult {
+	return &ParseResult{Items: items}
+}
+
 func NilParser([]byte) ParseResult {
 	return ParseResult{}
 }

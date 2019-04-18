@@ -1,13 +1,14 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler/util/agent/my"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/downloader"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/t66y/parser"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
@@ -25,5 +26,5 @@ func main() {
 }
 
 func init() {
-	downloader.NewWorker(parser.ImageCh)
+	downloader.NewWorker(downloader.ImageChan)
 }

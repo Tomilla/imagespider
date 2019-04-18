@@ -9,18 +9,23 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync/atomic"
 	"time"
 )
 
+var count int32
+
 type Worker struct {
 	*config.Config
-	workCh chan []*model.Topic
+	workChan chan model.Topic
 }
 
-func NewWorker(workCh chan []*model.Topic) {
+var ImageChan = make(chan model.Topic)
+
+func NewWorker(imageChan chan model.Topic) {
 	w := &Worker{
 		config.DefaultConfig,
-		workCh,
+		imageChan,
 	}
 
 	for i := 0; i < 20; i++ {
@@ -30,15 +35,13 @@ func NewWorker(workCh chan []*model.Topic) {
 
 func (w *Worker) Work() {
 	for {
-		tps := <-w.workCh
-		for _, t := range tps {
-			w.download(t)
-		}
+		tp := <-w.workChan
+		w.download(tp)
 	}
 
 }
 
-func (w *Worker) download(tp *model.Topic) {
+func (w *Worker) download(tp model.Topic) {
 	baseFolder := w.Config.Path + "/" + tp.Name
 	if err := os.MkdirAll(baseFolder, 0700); err != nil {
 		panic(err)
@@ -46,18 +49,14 @@ func (w *Worker) download(tp *model.Topic) {
 	for i, url := range tp.Images {
 		err := w.downloadWithPath(url, baseFolder, tp.Name, i)
 		if err != nil {
-
-			log.Println("#######Error download ", err, url)
-			//panic(err)
+			log.Println("####### Error download ", err, url)
 			continue
 		}
 	}
-	log.Println("downloaded ", tp.Name, "-->", len(tp.Images))
+	log.Println("##", atomic.AddInt32(&count, int32(len(tp.Images))), "downloaded ", tp.Name)
 }
 func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error {
-	//log.Println("Download link ", url)
 	fileName := w.getFileName(baseFolder, name, index)
-	//fmt.Println(fileName)
 	if pathExist(fileName) {
 		return nil
 	}
