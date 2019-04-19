@@ -1,8 +1,8 @@
 package downloader
 
 import (
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 )
 
 var count int32

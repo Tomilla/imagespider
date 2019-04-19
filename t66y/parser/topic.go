@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 )
 
 var imageRe = regexp.MustCompile(`data-(src|link)=['"](http[s]?://[^'"]+)['"]`)

@@ -1,6 +1,6 @@
 package engine
 
-import "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler/util/agent"
+import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent"
 
 type Request struct {
 	Url        string

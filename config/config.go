@@ -1,6 +1,6 @@
 package config
 
-import "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
+import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 
 type Config struct {
 	OneFolder bool

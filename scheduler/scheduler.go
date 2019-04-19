@@ -1,6 +1,6 @@
 package scheduler
 
-import "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
+import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
 
 type Scheduler struct {
 	requestChan chan engine.Request
