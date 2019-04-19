@@ -22,6 +22,7 @@ func Fetch(url string) ([]byte, error) {
 	//@@@@@@@@@@@@@@@@@@@@@@
 	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		Proxy:           http.ProxyFromEnvironment, // use proxy from the env
 	}
 	client := &http.Client{
 		Timeout:   15 * time.Second,

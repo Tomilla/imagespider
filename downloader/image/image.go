@@ -97,6 +97,7 @@ func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error
 	//@@@@@@@@@@@@@@@@@
 	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		Proxy:           http.ProxyFromEnvironment,
 	}
 	client := &http.Client{
 		Timeout:   15 * time.Second,
