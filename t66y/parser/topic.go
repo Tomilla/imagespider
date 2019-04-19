@@ -56,10 +56,9 @@ func normalizeName(s string) string {
 func isDup(b []byte) bool {
 	s := string(b)
 	switch {
-	case strings.Contains(s, `www.yuoimg.com/i/?i=u`):
+	case strings.Contains(s, `/i/?i=u`): //并不是图片文件
 		return true
-	case strings.Contains(s, `www.louimg.com/i/?i=u`):
-		return true
+
 	default:
 		return false
 
@@ -74,7 +73,7 @@ func filter(b []byte) []byte {
 
 	s := string(b)
 	switch {
-	case strings.Contains(s, `www.yuoimg.com/i/?i=u`):
+	case strings.Contains(s, `/i/?i=u`):
 		//fmt.Println("before  Replaced ", s)
 		s := strings.Replace(s, `i/?i=u`, `u`, -1)
 
