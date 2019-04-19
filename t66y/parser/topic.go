@@ -43,10 +43,15 @@ func normalizeName(s string) string {
 	r := []rune(s)
 	for i, v := range r {
 		if v == '-' {
-			result := string(r[:i-1])
+
+			r := r[:i-1]  // incase of long filename
+			if len(r) > 10 {
+				r = r[:10]
+			}
+
 			//fmt.Println("after --> ", result)
 
-			return result
+			return string(r)
 		}
 	}
 	return ""
