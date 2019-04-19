@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
@@ -88,22 +89,28 @@ func (w *Worker) Download(tp model.Topic) {
 	}
 
 }
-func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error {
+func (w *Worker) downloadWithPath(link, baseFolder, name string, index int) error {
 	fileName := w.getFileName(baseFolder, name, index)
 	if pathExist(fileName) {
 		return nil
 	}
-	//resp, err := http.Get(url)
+	//resp, err := http.Get(link)
 	//@@@@@@@@@@@@@@@@@
+
+	proxyStr := "socks5://localhost:1080"
+	proxyURL, err := url.Parse(proxyStr)
+	if err != nil {
+		log.Println(err)
+	}
 	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		Proxy:           http.ProxyFromEnvironment,
+		Proxy:           http.ProxyURL(proxyURL),
 	}
 	client := &http.Client{
 		Timeout:   15 * time.Second,
 		Transport: tr, //解决x509: certificate signed by unknown authority
 	}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", link, nil)
 	resp, err := client.Do(req)
 
 	//@@@@@@@@@@@@@@@@@
