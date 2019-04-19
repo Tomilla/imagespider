@@ -5,8 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/all"
+
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler/util/agent/my"
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/downloader"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/t66y/parser"
 )
@@ -23,8 +24,4 @@ func main() {
 		signal.Notify(osSignals, os.Interrupt, os.Kill, syscall.SIGTERM)
 		<-osSignals
 	}
-}
-
-func init() {
-	downloader.NewWorker(downloader.ImageChan)
 }

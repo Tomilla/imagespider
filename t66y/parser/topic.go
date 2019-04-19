@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 	"regexp"
+	"strings"
 )
 
 var imageRe = regexp.MustCompile(`data-(src|link)=['"](http[s]?://[^'"]+)['"]`)
@@ -23,9 +25,9 @@ func ParseTopic(contents []byte) engine.ParseResult {
 	name := string(titleMatch[1])
 
 	t.Name = normalizeName(name)
-	//log.Println("ParseTopic ["+t.Name+"]"+" matches -->  ", len(imageMatches), "images")
 
 	for _, m := range imageMatches {
+		filter(m[2])
 		t.Images = append(t.Images, string(m[2]))
 	}
 
@@ -33,11 +35,48 @@ func ParseTopic(contents []byte) engine.ParseResult {
 }
 
 func normalizeName(s string) string {
+	//s = strings.Trim(s, "[]")
+	fmt.Println("before -- > ", s)
 	r := []rune(s)
 	for i, v := range r {
-		if v == ' ' {
-			return string(r[:i])
+		if v == '-' {
+			result := string(r[:i-1])
+			fmt.Println("after --> ", result)
+
+			return result
 		}
 	}
 	return ""
+}
+
+// delete duplicates
+func isDup(b []byte) bool {
+	s := string(b)
+	switch {
+	case strings.Contains(s, `www.yuoimg.com/i/?i=u`):
+		return true
+	default:
+		return false
+
+	}
+}
+
+func filter(b []byte) []byte {
+
+	if !isDup(b) {
+		return b
+	}
+
+	s := string(b)
+	switch {
+	case strings.Contains(s, `www.yuoimg.com/i/?i=u`):
+		fmt.Println("before  Replaced ", s)
+		s := strings.Replace(s, `i/?i=u`, `u`, -1)
+
+		fmt.Println("after Replaced ", s)
+		return []byte(s)
+	default:
+		return b
+	}
+
 }

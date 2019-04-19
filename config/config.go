@@ -1,18 +1,19 @@
 package config
 
-import "os"
+import "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 
 type Config struct {
-	Path           string
-	SeperateFolder bool
+	OneFolder bool
+	Image     ImageConfig
 }
 
-var DefaultConfig = getDefaultConfig()
+func NewConfig() *Config {
+	return &Config{}
+}
 
-func getDefaultConfig() *Config {
-	if wd, err := os.Getwd(); err == nil {
-		return &Config{wd + "fruit", false}
-	} else {
-		panic(err)
-	}
+var AllConf = NewConfig()
+
+func (c *Config) GetImageChan() chan model.Topic {
+	return AllConf.Image.ImageChan
+
 }

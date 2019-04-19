@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/downloader"
+	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/fetcher"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 	"log"
@@ -9,6 +9,7 @@ import (
 
 func Run(seeds ...Request) {
 	var requests []Request
+	// start page
 	for _, r := range seeds {
 		requests = append(requests, r)
 	}
@@ -27,6 +28,7 @@ func Run(seeds ...Request) {
 	}
 }
 
+// fetch as request and return the parsed result
 func work(r *Request) (*ParseResult, error) {
 
 	log.Printf("Fetching %s\n", r.Url)
@@ -40,13 +42,15 @@ func work(r *Request) (*ParseResult, error) {
 	return &ParseResult, nil
 }
 
-// deal all items
+// deal all items that need not fetch again
 func dealItems(items []interface{}) {
 	for _, item := range items {
 
 		switch item.(type) {
 		case model.Topic:
-			downloader.ImageChan <- item.(model.Topic)
+			if imageChan := config.AllConf.GetImageChan(); imageChan != nil {
+				imageChan <- item.(model.Topic) // 转换为topic 类型
+			}
 		default:
 			log.Printf("Got item %s", item)
 		}
