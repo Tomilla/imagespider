@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -25,4 +26,8 @@ func main() {
 		signal.Notify(osSignals, os.Interrupt, os.Kill, syscall.SIGTERM)
 		<-osSignals
 	}
+}
+
+func init() {
+	go http.ListenAndServe(":6060", nil)
 }
