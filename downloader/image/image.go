@@ -73,10 +73,16 @@ func (w *Worker) Download(tp model.Topic) {
 		err := w.downloadWithPath(url, baseFolder, tp.Name, i)
 		if err != nil {
 			log.Println("####### Error download ", err, url)
+			fineName := w.getFileName(baseFolder, tp.Name, i)
+			if err := os.Remove(fineName); err != nil { // 下载失败 删除文件
+				panic(err)
+			}
 			continue
 		}
+		//log.Printf("#%d downloaded %s", atomic.AddInt32(&count, int32(len(tp.Images))), tp.Name)
+		log.Printf("#%d downloaded %s", atomic.AddInt32(&count, 1), tp.Name)
+
 	}
-	log.Printf("#%d downloaded %s", atomic.AddInt32(&count, int32(len(tp.Images))), tp.Name)
 
 }
 func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error {
