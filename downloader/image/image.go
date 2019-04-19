@@ -3,8 +3,6 @@ package image
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
-	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 	"io"
 	"log"
 	"net/http"
@@ -12,6 +10,9 @@ import (
 	"strconv"
 	"sync/atomic"
 	"time"
+
+	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
 )
 
 var count int32
@@ -67,14 +68,15 @@ func (w *Worker) Download(tp model.Topic) {
 			panic(err)
 		}
 	}
+
 	for i, url := range tp.Images {
 		err := w.downloadWithPath(url, baseFolder, tp.Name, i)
 		if err != nil {
 			log.Println("####### Error download ", err, url)
 			continue
 		}
-		log.Println("##", atomic.AddInt32(&count, int32(len(tp.Images))), "downloaded ", tp.Name)
 	}
+	log.Printf("#%d downloaded %s", atomic.AddInt32(&count, int32(len(tp.Images))), tp.Name)
 
 }
 func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error {

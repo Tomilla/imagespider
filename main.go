@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	_ "github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/all"
+	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/scheduler"
 
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler/util/agent/my"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/engine"
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-	engine.Run(engine.Request{
+	engine.Run(scheduler.NewScheduler(), engine.Request{
 		Url:        "http://t66y.com/thread0806.php?fid=8",
 		ParserFunc: parser.ParseTopicList,
 		Agent:      my.NewAgent(),

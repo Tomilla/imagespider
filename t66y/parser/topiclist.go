@@ -12,6 +12,7 @@ var topicListRe = regexp.MustCompile(`<h3><a href="(htm_data/[0-9]*/[0-9]*/[0-9]
 func ParseTopicList(contents []byte) engine.ParseResult {
 
 	matches := topicListRe.FindAllSubmatch(contents, -1)
+	limit := 2 // limit the topic count
 	result := engine.ParseResult{}
 	for _, m := range matches {
 		result.Items = append(result.Items, "topic: "+string(m[2]))
@@ -21,6 +22,10 @@ func ParseTopicList(contents []byte) engine.ParseResult {
 			ParserFunc: ParseTopic,
 			Name:       string(m[2]),
 		})
+		limit--
+		if limit < 0 {
+			return result
+		}
 
 	}
 	return result

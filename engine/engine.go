@@ -4,42 +4,62 @@ import (
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/config"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/fetcher"
 	"github.com/wuxiangzhou2010/daily_learning/go/spider_proj/crawler_t66y/model"
+
 	"log"
 )
 
-func Run(seeds ...Request) {
-	var requests []Request
-	// start page
-	for _, r := range seeds {
-		requests = append(requests, r)
-	}
-	for len(requests) > 0 {
-		r := requests[0]
+type Scheduler interface {
+	Schedule()
+	SubmitRequest(Request)
+	SubmitWorker(chan Request)
+	GetWorkCount() int
+}
 
-		result, err := work(&r)
-		if err != nil {
-			continue
+func Run(s Scheduler, seeds ...Request) {
+	out := make(chan ParseResult)
+
+	go s.Schedule() // scheduler started
+
+	for i := 0; i < s.GetWorkCount(); i++ {
+		go work(s, out) // 创建所有worker
+	}
+
+	for _, r := range seeds { // submit start page
+		s.SubmitRequest(r)
+	}
+
+	for {
+		result := <-out
+		for _, r := range result.Requests {
+			s.SubmitRequest(r)
 		}
-		requests = requests[1:] // 成功后删除第一个request
 
-		requests = append(requests, result.Requests...)
 		dealItems(result.Items)
-
 	}
+
 }
 
 // fetch as request and return the parsed result
-func work(r *Request) (*ParseResult, error) {
 
-	log.Printf("Fetching %s\n", r.Url)
-	body, err := fetcher.Fetch(r.Url)
-	if err != nil {
-		log.Printf("Fetcher : error "+"fetching url %s: %v", r.Url, err)
-		return nil, err
+func work(s Scheduler, out chan ParseResult) {
+	workChan := make(chan Request)
+	s.SubmitWorker(workChan)
+
+	for {
+		r := <-workChan
+
+		log.Printf("Fetching %s\n", r.Url)
+		body, err := fetcher.Fetch(r.Url)
+		if err != nil {
+			continue
+		}
+
+		ParseResult := r.ParserFunc(body)
+		out <- ParseResult
+		s.SubmitWorker(workChan)
+
 	}
 
-	ParseResult := r.ParserFunc(body)
-	return &ParseResult, nil
 }
 
 // deal all items that need not fetch again
