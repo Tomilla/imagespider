@@ -1,12 +1,14 @@
 package image
 
 import (
+	"bufio"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -43,9 +45,10 @@ func (d *Downloader) CreateWorker() {
 	}
 
 	for i := 0; i < d.WorkerCount; i++ {
-		fmt.Println("create a image worker ", i)
+
 		go w.Work()
 	}
+	fmt.Printf("create %d image worker\n", d.WorkerCount)
 }
 
 func (w *Worker) Work() {
@@ -62,7 +65,8 @@ func (w *Worker) Work() {
 }
 
 func (w *Worker) Download(tp model.Topic) {
-	baseFolder := w.Path + "/" + tp.Name
+	baseFolder := path.Join(w.Path, tp.Name)
+	fmt.Println("Basefolder", baseFolder)
 	if !w.UniqFolder { // 如果不是统一文件夹， 则需要分别创建文件夹
 		if err := os.MkdirAll(baseFolder, 0700); err != nil {
 			panic(err)
@@ -74,9 +78,8 @@ func (w *Worker) Download(tp model.Topic) {
 		if err != nil {
 			log.Println("####### Error download ", err, url)
 			fineName := w.getFileName(baseFolder, tp.Name, i)
-			if err := os.Remove(fineName); err != nil { // 下载失败 删除文件
-				panic(err)
-			}
+			os.Remove(fineName) // 下载失败 删除文件
+
 			continue
 		}
 		//log.Printf("#%d downloaded %s", atomic.AddInt32(&count, int32(len(tp.Images))), tp.Name)
@@ -108,13 +111,13 @@ func (w *Worker) downloadWithPath(url, baseFolder, name string, index int) error
 		return err
 	}
 	defer resp.Body.Close()
-
+	buf := bufio.NewReader(resp.Body)
 	out, err := os.Create(fileName)
 	if err != nil {
 		return err
 	}
 
-	io.Copy(out, resp.Body)
+	io.Copy(out, buf)
 	defer out.Close()
 	return nil
 }
