@@ -6,7 +6,6 @@ import (
 
 	// for image config
 	_ "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/downloader/image"
-
 	// for debug
-	_ "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/debug"
+	// _ "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/debug"
 )
