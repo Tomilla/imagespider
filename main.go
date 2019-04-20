@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,9 +10,9 @@ import (
 	_ "github.com/wuxiangzhou2010/imagespider/all"
 	"github.com/wuxiangzhou2010/imagespider/scheduler"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
 	"github.com/wuxiangzhou2010/imagespider/engine"
 	"github.com/wuxiangzhou2010/imagespider/t66y/parser"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
 )
 
 func main() {
@@ -43,8 +41,4 @@ func generateStartPages() (r []engine.Request) {
 	}
 	return
 
-}
-
-func init() {
-	go http.ListenAndServe(":6060", nil)
 }
