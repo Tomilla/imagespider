@@ -10,6 +10,10 @@
     "http://t66y.com/thread0806.php?fid=21"
   ],
   "pageLimit": 10,
-  "proxyUrl": "socks5://localhost:1080",
-  "nameLenLimit": 40
+
+  "nameLenLimit": 60,
+  "net": {
+    "timeOut": 30,
+    "proxyUrl": "socks5://localhost:1080"
+  }
 }

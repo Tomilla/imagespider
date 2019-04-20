@@ -22,7 +22,7 @@ type Config struct {
 	Image        ImageConfig `json:"image"`
 	StartPages   []string    `json:"startPages"`
 	PageLimit    int         `json:"pageLimit"`
-	ProxyURL     string      `json:"proxyUrl"`
+	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 }
 
@@ -82,7 +82,12 @@ func getConfigFileName() string {
 }
 
 func (c *Config) GetProxyURL() string {
-	return c.ProxyURL
+	return c.Net.ProxyURL
+}
+
+func (c *Config) GetNetTimeOut() int {
+	return c.Net.TimeOut
+
 }
 
 func LoadConfig() (c *Config) {

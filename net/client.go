@@ -26,8 +26,9 @@ func NewClient() *http.Client {
 		tr.Proxy = http.ProxyURL(proxyURL)
 	}
 
+	timeOut := config.C.GetNetTimeOut()
 	client := &http.Client{
-		Timeout:   15 * time.Second,
+		Timeout:   time.Duration(timeOut) * time.Second,
 		Transport: tr, //解决x509: certificate signed by unknown authority
 	}
 
