@@ -31,6 +31,7 @@ func (d *downloader) Run() {
 	for {
 		topic := <-d.ImageChan
 
+		// 分析 url 和名字
 		baseFolder := path.Join(d.Path, topic.Name)
 		fmt.Println("BaseFolder", baseFolder)
 		if !d.UniqFolder { // 如果不是统一文件夹， 则需要分别创建文件夹
@@ -39,7 +40,7 @@ func (d *downloader) Run() {
 			}
 		}
 
-		for i, url := range topic.Images {
+		for i, url := range topic.Images { // 传给worker下载
 			fileName := d.getFileName(baseFolder, topic.Name, i)
 			w := newWork(url, fileName)
 			workChan <- w
