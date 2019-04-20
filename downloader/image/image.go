@@ -1,7 +1,6 @@
 package image
 
 import (
-	"fmt"
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/model"
 )
@@ -18,6 +17,6 @@ func init() {
 
 	go d.Run() // start downloader
 
-	fmt.Println("Image init")
+	//fmt.Println("Image init")
 
 }
