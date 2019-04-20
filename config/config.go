@@ -121,14 +121,14 @@ func removeComment(reader io.Reader) (newReader io.Reader) {
 		panic(err)
 	}
 	s := string(bs)
-	fmt.Println("before ", s)
+	//fmt.Println("before ", s)
 	re1 := regexp.MustCompile(`(?im)^\s+\/\/.*$`) // 整行注释
 
 	s = re1.ReplaceAllString(s, "")
-	fmt.Println("after1 ", s)
+	//fmt.Println("after1 ", s)
 	re2 := regexp.MustCompile(`\/\/[^"\[\]]+\n`) // 行末
 	s = re2.ReplaceAllString(s, "")
-	fmt.Println("after2 ", s)
+	//fmt.Println("after2 ", s)
 	newReader = strings.NewReader(s)
 	return
 
