@@ -8,22 +8,26 @@ import (
 	"strconv"
 )
 
-type Downloader struct {
+type downloader struct {
 	config.ImageConfig
 	workChan chan work
 }
 
-func NewDownloader(imageConfig *config.ImageConfig) *Downloader {
+func NewDownloader(imageConfig *config.ImageConfig) *downloader {
 
-	return &Downloader{ImageConfig: *imageConfig}
+	return &downloader{ImageConfig: *imageConfig}
 }
-func (d *Downloader) Run() {
+func (d *downloader) Run() {
 
 	if err := os.MkdirAll(d.Path, 0700); err != nil {
 		panic(err)
 	}
+	readyChan := make(chan chan work)
 	workChan := make(chan work)
-	d.CreateWorker(workChan)
+	s := newScheduler(workChan, readyChan)
+	go s.schedule()
+
+	d.CreateWorker(s)
 	for {
 		topic := <-d.ImageChan
 
@@ -44,9 +48,9 @@ func (d *Downloader) Run() {
 	}
 }
 
-func (d *Downloader) CreateWorker(workChan chan work) {
-	w := NewWorker(workChan, d.WorkerCount)
-	w.Start()
+func (d *downloader) CreateWorker(s *scheduler) {
+	ws := NewWorkers(s)
+	ws.Start()
 }
 
 // golang新版本的应该
@@ -58,7 +62,7 @@ func pathExist(_path string) bool {
 	return true
 }
 
-func (d *Downloader) getFileName(baseFolder, name string, index int) string {
+func (d *downloader) getFileName(baseFolder, name string, index int) string {
 	if d.UniqFolder { //放同一个文件夹， 只需要提供文件名就行
 		return baseFolder + strconv.Itoa(index) + ".jpg"
 	}

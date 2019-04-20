@@ -30,7 +30,7 @@ func main() {
 
 func generateStartPages() (r []engine.Request) {
 
-	for _, url := range config.StartPages {
+	for _, url := range config.C.GetStartPages() {
 		r = append(r, engine.Request{
 			Url:        url,
 			ParserFunc: parser.ParseTopicList,

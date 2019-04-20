@@ -1,6 +1,6 @@
 {
   "image": {
-    "path": "d:\\",
+    "path": "d:\\t66yImage",
     "workerCount": 20,
     "isUniqFolder": true
   },
@@ -9,5 +9,7 @@
     "http://t66y.com/thread0806.php?fid=16",
     "http://t66y.com/thread0806.php?fid=21"
   ],
-  "pageLimit": 10
+  "pageLimit": 10,
+  "proxyUrl": "socks5://localhost:1080",
+  "nameLenLimit": 40
 }

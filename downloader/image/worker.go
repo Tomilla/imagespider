@@ -12,16 +12,6 @@ import (
 	"sync/atomic"
 )
 
-type Worker struct {
-	workChan    chan work
-	workerCount int
-}
-
-func NewWorker(workChan chan work, workerCount int) *Worker {
-	return &Worker{workChan: workChan,
-		workerCount: workerCount}
-}
-
 type work struct {
 	url      string
 	fileName string
@@ -31,27 +21,39 @@ func newWork(url string, fileName string) work {
 	return work{url: url, fileName: fileName}
 }
 
-func (w *Worker) Start() {
+type worker struct {
+	s *scheduler
+}
 
-	for i := 0; i < w.workerCount; i++ {
+func NewWorkers(s *scheduler) *worker {
+	return &worker{s: s}
+}
+
+func (w *worker) Start() {
+
+	for i := 0; i < w.s.workerCount; i++ {
 		go w.work()
 	}
 
 }
-func (w *Worker) work() {
+func (w *worker) work() {
+	workChan := make(chan work)
+	w.s.Ready(workChan)
+
 	for {
-		task, ok := <-w.workChan
+		task, ok := <-workChan
 		if !ok {
 			return // channel 关闭，退出
 		}
 
 		w.Download(task)
+		w.s.Ready(workChan)
 
 	}
 
 }
 
-func (w *Worker) Download(task work) {
+func (w *worker) Download(task work) {
 
 	err := w.downloadWithPath(task.url, task.fileName)
 	if err != nil {
@@ -63,7 +65,7 @@ func (w *Worker) Download(task work) {
 
 }
 
-func (w *Worker) downloadWithPath(link, fileName string) error {
+func (w *worker) downloadWithPath(link, fileName string) error {
 
 	if pathExist(fileName) {
 		return nil

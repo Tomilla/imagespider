@@ -19,14 +19,24 @@ var StartPages = []string{
 
 type Config struct {
 	sync.RWMutex
-	Image      ImageConfig `json:"image"`
-	StartPages []string    `json:"startPages"`
-	PageLimit  int         `json:"pageLimit"`
-	ProxyURL   string      `json:"proxyUrl"`
+	Image        ImageConfig `json:"image"`
+	StartPages   []string    `json:"startPages"`
+	PageLimit    int         `json:"pageLimit"`
+	ProxyURL     string      `json:"proxyUrl"`
+	MameLenLimit int         `json:"nameLenLimit"`
 }
 
 func NewConfig() *Config {
 	return LoadConfig()
+}
+func (c *Config) GetNameLenLimit() int {
+	c.RLock()
+	defer c.RUnlock()
+
+	return c.MameLenLimit
+}
+func (c *Config) GetImageWorkerCount() int {
+	return c.Image.WorkerCount
 }
 
 func (c *Config) GetStartPages() []string {

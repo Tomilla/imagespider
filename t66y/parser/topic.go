@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
 	"regexp"
 	"strings"
 
@@ -44,9 +45,10 @@ func normalizeName(s string) string {
 	for i, v := range r {
 		if v == '-' {
 
-			r := r[:i-1]  // incase of long filename
-			if len(r) > 10 {
-				r = r[:10]
+			r := r[:i-1] // in case of long filename
+			limit := config.C.GetNameLenLimit()
+			if len(r) > limit {
+				r = r[:limit]
 			}
 
 			//fmt.Println("after --> ", result)
