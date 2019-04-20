@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/wuxiangzhou2010/imagespider/net"
-
 	"sync/atomic"
+
+	"github.com/wuxiangzhou2010/imagespider/net"
 )
 
 type work struct {
@@ -73,7 +73,7 @@ func (w *worker) downloadWithPath(link, fileName string) error {
 	//resp, err := http.Get(link)
 	//@@@@@@@@@@@@@@@@@
 
-	client := net.NewClient()
+	client := net.NewClient(false)
 	req, err := http.NewRequest("GET", link, nil)
 	resp, err := client.Do(req)
 

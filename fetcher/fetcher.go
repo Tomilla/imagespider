@@ -3,14 +3,15 @@ package fetcher
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+
 	"github.com/wuxiangzhou2010/imagespider/net"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"io/ioutil"
-	"log"
-	"net/http"
 )
 
 type Fetcher interface {
@@ -20,7 +21,7 @@ type Fetcher interface {
 func Fetch(link string) ([]byte, error) {
 	//@@@@@@@@@@@@@@@@@@@@@@
 
-	client := net.NewClient()
+	client := net.NewClient(true)
 	req, err := http.NewRequest("GET", link, nil)
 	res, err := client.Do(req)
 
