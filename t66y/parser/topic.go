@@ -10,7 +10,9 @@ import (
 	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
-var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+[^s])['"]`)
+//var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+[^s])['"]`)
+
+var imageRe = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?:\/\/[^'"]+(jpg|png|jpeg))['"]`)
 var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
 var ImageCh = make(chan []*model.Topic, 20)
 
@@ -29,11 +31,12 @@ func ParseTopic(contents []byte) engine.ParseResult {
 	t.Name = normalizeName(name)
 
 	for _, m := range imageMatches {
-		//filter(m[2])
-		if isDup(m[2]) {
+		url := string(m[2])
+		if isDup(url) {
 			continue
 		}
 		t.Images = append(t.Images, string(m[2]))
+		//fmt.Println("added", string(m[2]), t.Name)
 	}
 
 	return engine.ParseResult{Items: []interface{}{t}}
@@ -64,35 +67,57 @@ func normalizeName(s string) string {
 }
 
 // delete duplicates
-func isDup(b []byte) bool {
-	s := string(b)
+func isDup(s string) bool {
+	result := false
 	switch {
 	case strings.Contains(s, `/i/?i=u`): //并不是图片文件
-		return true
-	case strings.Contains(s, `www.kanjiantu.com/image/`):
-		return true
+		result = true // 如 https://www.yuoimg.com/u/20190218/12543160.jpg
+	//case strings.Contains(s, `www.kanjiantu.com/image/`):
+	//	result = true
+	//case strings.Contains(s, `sb88y.net`):
+	//	result = true
+	//case strings.Contains(s, `htm`):
+	//	result = true
+	//case strings.Contains(s, `h34229`):
+	//	result = true
+	//case strings.Contains(s, `img599`):
+	//	result = true
+	//case strings.Contains(s, `667um`):
+	//	result = true
+	//case strings.Contains(s, `51668`):
+	//	result = true
+	//case strings.Contains(s, `x6img`):
+	//	result = true
+	//case strings.Contains(s, `dioimg`):
+	//	result = true
+	//case strings.Contains(s, `sinaimg`):
+	//  result = true
+	case strings.Contains(s, `imagexport`): // 这个网址不直接提供图片文件
+		result = true
+	//case strings.Contains(s, `?`):
+	//	return true
 	default:
-		return false
 
 	}
+	return result
 }
 
-func filter(b []byte) []byte {
-
-	if !isDup(b) {
-		return b
-	}
-
-	s := string(b)
-	switch {
-	case strings.Contains(s, `/i/?i=u`):
-		//fmt.Println("before  Replaced ", s)
-		s := strings.Replace(s, `i/?i=u`, `u`, -1)
-
-		//fmt.Println("after Replaced ", s)
-		return []byte(s)
-	default:
-		return b
-	}
-
-}
+//func filter(b []byte) []byte {
+//
+//	if !isDup(b) {
+//		return b
+//	}
+//
+//	s := string(b)
+//	switch {
+//	case strings.Contains(s, `/i/?i=u`):
+//		//fmt.Println("before  Replaced ", s)
+//		s := strings.Replace(s, `i/?i=u`, `u`, -1)
+//
+//		//fmt.Println("after Replaced ", s)
+//		return []byte(s)
+//	default:
+//		return b
+//	}
+//
+//}
