@@ -90,6 +90,7 @@ func (c *Config) GetNetTimeOut() int {
 
 }
 
+// LoadConfig, load config
 func LoadConfig() (c *Config) {
 
 	filename := getConfigFileName()
@@ -107,18 +108,10 @@ func LoadConfig() (c *Config) {
 }
 
 func PrintConfig(cfg *Config) {
-	//log.Print(
-	//	"\n##### config ########\n",
-	//	"rate\t\t\t: ", cfg.Rate,
-	//	"\nendpoint\t\t: ", cfg.Endpoint,
-	//	"\ntxBuffer\t\t: ", cfg.RawTxBuffer,
-	//	"\nsignedTxBuffer\t\t: ", cfg.SignedTxBuffer,
-	//	"\nlast\t\t\t: ", cfg.Last,
-	//	"\n#######################\n",
-	//)
+
 	fmt.Printf("%+v\n", cfg)
 }
 
 func init() {
-	C = NewConfig()
+	C = NewConfig() // default config
 }
