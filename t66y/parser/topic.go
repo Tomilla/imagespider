@@ -1,15 +1,16 @@
 package parser
 
 import (
-	"github.com/wuxiangzhou2010/imagespider/config"
 	"regexp"
 	"strings"
+
+	"github.com/wuxiangzhou2010/imagespider/config"
 
 	"github.com/wuxiangzhou2010/imagespider/engine"
 	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
-var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+)['"]`)
+var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+[^s])['"]`)
 var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
 var ImageCh = make(chan []*model.Topic, 20)
 
@@ -68,7 +69,8 @@ func isDup(b []byte) bool {
 	switch {
 	case strings.Contains(s, `/i/?i=u`): //并不是图片文件
 		return true
-
+	case strings.Contains(s, `www.kanjiantu.com/image/`):
+		return true
 	default:
 		return false
 
