@@ -9,7 +9,7 @@ import (
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 )
 
-var imageRe = regexp.MustCompile(`data-(src|link)=['"](http[s]?://[^'"]+)['"]`)
+var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+)['"]`)
 var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
 var ImageCh = make(chan []*model.Topic, 20)
 
