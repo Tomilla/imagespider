@@ -1,6 +1,11 @@
 package image
 
-import "github.com/wuxiangzhou2010/imagespider/config"
+import (
+	"log"
+	"time"
+
+	"github.com/wuxiangzhou2010/imagespider/config"
+)
 
 type scheduler struct {
 	workChan    chan work
@@ -15,7 +20,7 @@ func newScheduler(workChan chan work, readyChan chan chan work) *scheduler {
 func (s *scheduler) schedule() {
 	var workQ []work
 	var readyQ []chan work
-
+	ticker := time.Tick(2 * time.Second)
 	for {
 		var activeWork work
 		var activeWorker chan work
@@ -33,6 +38,9 @@ func (s *scheduler) schedule() {
 		case activeWorker <- activeWork:
 			readyQ = readyQ[1:]
 			workQ = workQ[1:]
+		case <-ticker:
+			log.Printf("[Downloader worker] workQ len %d cap %d, readyQ len %d cap %d\n",
+				len(workQ), cap(workQ), len(readyQ), cap(readyQ))
 
 		}
 	}
