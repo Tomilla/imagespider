@@ -2,16 +2,14 @@ package image
 
 import (
 	"bufio"
-	"crypto/tls"
-
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/net"
+
 	"sync/atomic"
-	"time"
 )
 
 type Worker struct {
@@ -73,19 +71,7 @@ func (w *Worker) downloadWithPath(link, fileName string) error {
 	//resp, err := http.Get(link)
 	//@@@@@@@@@@@@@@@@@
 
-	proxyStr := "socks5://localhost:1080"
-	proxyURL, err := url.Parse(proxyStr)
-	if err != nil {
-		log.Println(err)
-	}
-	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		Proxy:           http.ProxyURL(proxyURL),
-	}
-	client := &http.Client{
-		Timeout:   15 * time.Second,
-		Transport: tr, //解决x509: certificate signed by unknown authority
-	}
+	client := net.NewClient()
 	req, err := http.NewRequest("GET", link, nil)
 	resp, err := client.Do(req)
 

@@ -3,10 +3,11 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 	"os"
 	"path"
 	"sync"
+
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 )
 
 var C *Config
@@ -18,9 +19,10 @@ var StartPages = []string{
 
 type Config struct {
 	sync.RWMutex
-	Image      ImageConfig
-	StartPages []string
-	PageLimit  int
+	Image      ImageConfig `json:"image"`
+	StartPages []string    `json:"startPages"`
+	PageLimit  int         `json:"pageLimit"`
+	ProxyURL   string      `json:"proxyUrl"`
 }
 
 func NewConfig() *Config {
@@ -67,6 +69,10 @@ func getConfigFileName() string {
 	}
 	return path.Join(wd, "config.json")
 
+}
+
+func (c *Config) GetProxyURL() string {
+	return c.ProxyURL
 }
 
 func LoadConfig() (c *Config) {
