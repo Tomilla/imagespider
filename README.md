@@ -31,7 +31,7 @@ default config is as below
 ```
 
 ```go
-go run github.com/wuxiangzhou2010/luandun/tree/master/go/spider_proj/crawler_t66y
+go run github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y
 ```
 
 ## arch
