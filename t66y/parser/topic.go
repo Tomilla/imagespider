@@ -52,8 +52,11 @@ func normalizeName(s string) string {
 			}
 
 			//fmt.Println("after --> ", result)
-
-			return string(r)
+			result := string(r)
+			if strings.Contains(result, `/`) { // 去除名字中的反斜杠
+				result = strings.Replace(result, `/`, ``, -1)
+			}
+			return result
 		}
 	}
 	return ""
