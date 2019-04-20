@@ -20,3 +20,14 @@ func NewParseResult(items []interface{}) *ParseResult {
 func NilParser([]byte) ParseResult {
 	return ParseResult{}
 }
+
+type Engine interface {
+	Run(s Scheduler, request []Request)
+}
+
+type Scheduler interface {
+	Schedule()
+	SubmitRequest(Request)
+	SubmitWorker(chan Request)
+	GetWorkCount() int
+}

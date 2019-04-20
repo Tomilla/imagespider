@@ -6,17 +6,19 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+
 	_ "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/all"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/scheduler"
 
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/t66y/parser"
 )
 
 func main() {
-	engine.Run(scheduler.NewScheduler(), generatedStartRequest()...)
+	e := engine.NewConcurrentEngine()
+	e.Run(scheduler.NewScheduler(), generateStartPages())
 
 	{
 		osSignals := make(chan os.Signal, 1)
@@ -25,7 +27,7 @@ func main() {
 	}
 }
 
-func generatedStartRequest() (r []engine.Request) {
+func generateStartPages() (r []engine.Request) {
 
 	for _, url := range config.StartPages {
 		r = append(r, engine.Request{

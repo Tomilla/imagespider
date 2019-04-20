@@ -8,20 +8,20 @@ import (
 	"log"
 )
 
-type Scheduler interface {
-	Schedule()
-	SubmitRequest(Request)
-	SubmitWorker(chan Request)
-	GetWorkCount() int
+type ConcurrentEngine struct {
 }
 
-func Run(s Scheduler, seeds ...Request) {
+func NewConcurrentEngine() *ConcurrentEngine {
+	return &ConcurrentEngine{}
+}
+
+func (e *ConcurrentEngine) Run(s Scheduler, seeds []Request) {
 	out := make(chan ParseResult)
 
 	go s.Schedule() // scheduler started
-
+	w := newWorker()
 	for i := 0; i < s.GetWorkCount(); i++ {
-		go work(s, out) // 创建所有worker
+		go w.work(s, out) // 创建所有worker
 	}
 
 	for _, r := range seeds { // submit start page
@@ -34,14 +34,20 @@ func Run(s Scheduler, seeds ...Request) {
 			s.SubmitRequest(r)
 		}
 
-		dealItems(result.Items)
+		e.dealItems(result.Items)
 	}
 
 }
 
+type Worker struct{}
+
+func newWorker() *Worker {
+	return &Worker{}
+}
+
 // fetch as request and return the parsed result
 
-func work(s Scheduler, out chan ParseResult) {
+func (w *Worker) work(s Scheduler, out chan ParseResult) {
 	workChan := make(chan Request)
 	s.SubmitWorker(workChan)
 
@@ -63,7 +69,7 @@ func work(s Scheduler, out chan ParseResult) {
 }
 
 // deal all items that need not fetch again
-func dealItems(items []interface{}) {
+func (e *ConcurrentEngine) dealItems(items []interface{}) {
 	for _, item := range items {
 
 		switch item.(type) {
