@@ -61,7 +61,10 @@ func (w *worker) Download(task work) {
 		os.Remove(task.fileName) // 下载失败 删除文件
 		return
 	}
-	log.Printf("#%d downloaded %s", atomic.AddInt32(&count, 1), task.fileName)
+
+	atomic.AddInt32(&count, 1)
+
+	//log.Printf("#%d downloaded %s", count, task.fileName)
 
 }
 
