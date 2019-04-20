@@ -17,7 +17,8 @@ import (
 )
 
 func main() {
-	e := engine.NewConcurrentEngine()
+
+	e := engine.NewConcurrentEngine(config.C.GetImageChan())
 	e.Run(scheduler.NewScheduler(), generateStartPages())
 
 	{

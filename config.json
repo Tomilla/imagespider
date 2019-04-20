@@ -1,0 +1,13 @@
+{
+  "image": {
+    "path": "d:\\",
+    "workerCount": 20,
+    "isUniqFolder": true
+  },
+  "startPages": [
+    "http://t66y.com/thread0806.php?fid=8",
+    "http://t66y.com/thread0806.php?fid=16",
+    "http://t66y.com/thread0806.php?fid=21"
+  ],
+  "pageLimit": 10
+}

@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/fetcher"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 
@@ -9,10 +8,11 @@ import (
 )
 
 type ConcurrentEngine struct {
+	ImageChan chan model.Topic
 }
 
-func NewConcurrentEngine() *ConcurrentEngine {
-	return &ConcurrentEngine{}
+func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
+	return &ConcurrentEngine{ImageChan: imageChan}
 }
 
 func (e *ConcurrentEngine) Run(s Scheduler, seeds []Request) {
@@ -39,7 +39,8 @@ func (e *ConcurrentEngine) Run(s Scheduler, seeds []Request) {
 
 }
 
-type Worker struct{}
+type Worker struct {
+}
 
 func newWorker() *Worker {
 	return &Worker{}
@@ -63,7 +64,6 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 		ParseResult := r.ParserFunc(body)
 		out <- ParseResult
 		s.SubmitWorker(workChan)
-
 	}
 
 }
@@ -74,7 +74,7 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 
 		switch item.(type) {
 		case model.Topic:
-			if imageChan := config.AllConf.GetImageChan(); imageChan != nil {
+			if imageChan := e.ImageChan; imageChan != nil {
 				imageChan <- item.(model.Topic) // 转换为topic 类型
 			}
 		default:
