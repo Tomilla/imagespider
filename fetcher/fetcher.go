@@ -3,7 +3,7 @@ package fetcher
 import (
 	"bufio"
 	"fmt"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/net"
+	"github.com/wuxiangzhou2010/imagespider/net"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"

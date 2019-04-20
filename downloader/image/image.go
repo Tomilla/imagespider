@@ -2,8 +2,8 @@ package image
 
 import (
 	"fmt"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
 var count int32

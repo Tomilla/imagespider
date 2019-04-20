@@ -1,6 +1,6 @@
 package config
 
-import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
+import "github.com/wuxiangzhou2010/imagespider/model"
 
 type ImageConfig struct {
 	Path        string `json:"path"` // 路径

@@ -7,14 +7,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/imagespider/config"
 
-	_ "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/all"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/scheduler"
+	_ "github.com/wuxiangzhou2010/imagespider/all"
+	"github.com/wuxiangzhou2010/imagespider/scheduler"
 
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/t66y/parser"
+	"github.com/wuxiangzhou2010/imagespider/engine"
+	"github.com/wuxiangzhou2010/imagespider/t66y/parser"
 )
 
 func main() {

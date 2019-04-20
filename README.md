@@ -31,9 +31,9 @@ default config is as below
 ```
 
 ```go
-go get github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y
-cd $GOPATH/src/github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y
-go run github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y
+go get github.com/wuxiangzhou2010/imagespider
+cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
+go run github.com/wuxiangzhou2010/imagespider
 ```
 
 ## arch

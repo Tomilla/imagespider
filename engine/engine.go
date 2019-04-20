@@ -3,8 +3,8 @@ package engine
 import (
 	"time"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/fetcher"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/imagespider/fetcher"
+	"github.com/wuxiangzhou2010/imagespider/model"
 
 	"log"
 )

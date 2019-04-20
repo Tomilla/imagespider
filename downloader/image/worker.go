@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/net"
+	"github.com/wuxiangzhou2010/imagespider/net"
 
 	"sync/atomic"
 )

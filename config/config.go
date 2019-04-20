@@ -7,7 +7,7 @@ import (
 	"path"
 	"sync"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
 var C *Config

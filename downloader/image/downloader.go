@@ -2,7 +2,7 @@ package image
 
 import (
 	"fmt"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"os"
 	"path"
 	"strconv"

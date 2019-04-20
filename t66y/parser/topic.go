@@ -1,12 +1,12 @@
 package parser
 
 import (
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"regexp"
 	"strings"
 
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
+	"github.com/wuxiangzhou2010/imagespider/engine"
+	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
 var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+)['"]`)

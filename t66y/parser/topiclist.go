@@ -2,8 +2,8 @@ package parser
 
 import (
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/engine"
+	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/wuxiangzhou2010/imagespider/engine"
 
 	"regexp"
 )

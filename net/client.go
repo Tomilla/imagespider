@@ -2,7 +2,7 @@ package net
 
 import (
 	"crypto/tls"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"net/http"
 	"net/url"
 	"time"

@@ -1,6 +1,6 @@
 package image
 
-import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/config"
+import "github.com/wuxiangzhou2010/imagespider/config"
 
 type scheduler struct {
 	workChan    chan work
