@@ -8,6 +8,9 @@ type Scheduler struct {
 	WorkerCount int
 }
 
+func (s *Scheduler) Shutdown() {
+
+}
 func (s *Scheduler) GetWorkCount() int {
 	return s.WorkerCount
 }

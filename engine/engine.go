@@ -1,6 +1,8 @@
 package engine
 
 import (
+	"time"
+
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/fetcher"
 	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler_t66y/model"
 
@@ -9,14 +11,22 @@ import (
 
 type ConcurrentEngine struct {
 	ImageChan chan model.Topic
+	s         Scheduler
 }
 
 func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 	return &ConcurrentEngine{ImageChan: imageChan}
 }
 
+func (e *ConcurrentEngine) Shutdown() {
+	close(e.ImageChan) // 不继续发送图片下载
+	e.s.Shutdown()
+	time.Sleep(10)
+
+}
 func (e *ConcurrentEngine) Run(s Scheduler, seeds []Request) {
 	out := make(chan ParseResult)
+	e.s = s
 
 	go s.Schedule() // scheduler started
 	w := newWorker()

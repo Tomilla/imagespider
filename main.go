@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,6 +27,9 @@ func main() {
 		signal.Notify(osSignals, os.Interrupt, os.Kill, syscall.SIGTERM)
 		<-osSignals
 	}
+	{
+		e.Shutdown()
+	}
 }
 
 func generateStartPages() (r []engine.Request) {
@@ -40,6 +44,7 @@ func generateStartPages() (r []engine.Request) {
 	return
 
 }
+
 func init() {
 	go http.ListenAndServe(":6060", nil)
 }

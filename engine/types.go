@@ -23,6 +23,7 @@ func NilParser([]byte) ParseResult {
 
 type Engine interface {
 	Run(s Scheduler, request []Request)
+	Shutdown()
 }
 
 type Scheduler interface {
@@ -30,4 +31,5 @@ type Scheduler interface {
 	SubmitRequest(Request)
 	SubmitWorker(chan Request)
 	GetWorkCount() int
+	Shutdown()
 }
