@@ -2,6 +2,7 @@ package image
 
 import (
 	"log"
+	"sync/atomic"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/config"
@@ -20,7 +21,8 @@ func newScheduler(workChan chan work, readyChan chan chan work) *scheduler {
 func (s *scheduler) schedule() {
 	var workQ []work
 	var readyQ []chan work
-	ticker := time.Tick(2 * time.Second)
+	var preCount int32
+	ticker := time.Tick(4 * time.Second)
 	for {
 		var activeWork work
 		var activeWorker chan work
@@ -39,8 +41,16 @@ func (s *scheduler) schedule() {
 			readyQ = readyQ[1:]
 			workQ = workQ[1:]
 		case <-ticker:
-			log.Printf("[Downloader worker] workQ len %d cap %d, readyQ len %d cap %d\n",
-				len(workQ), cap(workQ), len(readyQ), cap(readyQ))
+			v := atomic.LoadInt32(&count)
+			if !atomic.CompareAndSwapInt32(&preCount, v, v) {
+
+				preCount = v
+
+				log.Printf("[Downloader worker] workQ len %d cap %d, readyQ len %d cap %d\n",
+					len(workQ), cap(workQ), len(readyQ), cap(readyQ))
+				log.Printf("#%d downloaded", v)
+
+			}
 
 		}
 	}
