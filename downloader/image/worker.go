@@ -59,8 +59,8 @@ func (w *worker) Download(task work) {
 	if err != nil {
 		log.Println("####### Error download ", err, task.url)
 		os.Remove(task.fileName) // 下载失败 删除文件
+		return
 	}
-	//log.Printf("#%d downloaded %s", atomic.AddInt32(&count, int32(len(tp.Images))), tp.Name)
 	log.Printf("#%d downloaded %s", atomic.AddInt32(&count, 1), task.fileName)
 
 }
