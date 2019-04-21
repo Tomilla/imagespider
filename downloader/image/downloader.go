@@ -1,7 +1,6 @@
 package image
 
 import (
-	"fmt"
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"os"
 	"path"
@@ -33,7 +32,7 @@ func (d *downloader) Run() {
 
 		// 分析 url 和名字
 		baseFolder := path.Join(d.Path, topic.Name)
-		fmt.Println("BaseFolder", baseFolder)
+		//fmt.Println("BaseFolder", baseFolder)
 		if !d.UniqFolder { // 如果不是统一文件夹， 则需要分别创建文件夹
 			if err := os.MkdirAll(baseFolder, 0700); err != nil {
 				panic(err)

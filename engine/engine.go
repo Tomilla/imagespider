@@ -65,7 +65,7 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 	for {
 		r := <-workChan
 
-		log.Printf("Fetching %s\n", r.Url)
+		log.Printf("Fetching %s, %s \n", r.Name,r.Url)
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
 			continue

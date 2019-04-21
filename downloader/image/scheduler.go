@@ -46,9 +46,8 @@ func (s *scheduler) schedule() {
 
 				preCount = v
 
-				log.Printf("[Downloader worker] workQ len %d cap %d, readyQ len %d cap %d\n",
-					len(workQ), cap(workQ), len(readyQ), cap(readyQ))
-				log.Printf("#%d downloaded", v)
+				log.Printf("[Downloader worker] #%d downloaded [workQ len %d cap %d], [readyQ len %d cap %d]\n",
+					v, len(workQ), cap(workQ), len(readyQ), cap(readyQ))
 
 			}
 
