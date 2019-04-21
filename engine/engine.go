@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/fetcher"
@@ -24,27 +25,32 @@ func (e *ConcurrentEngine) Shutdown() {
 	time.Sleep(10)
 
 }
-func (e *ConcurrentEngine) Run(s Scheduler, seeds []Request) {
-	out := make(chan ParseResult)
+func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
+
 	e.s = s
 
-	go s.Schedule() // scheduler started
+	out := make(chan ParseResult)
+	hungry := make(chan bool)
+	go s.Schedule(hungry) // scheduler started
+
 	w := newWorker()
 	for i := 0; i < s.GetWorkCount(); i++ {
 		go w.work(s, out) // 创建所有worker
 	}
 
-	for _, r := range seeds { // submit start page
-		s.SubmitRequest(r)
-	}
-
 	for {
-		result := <-out
-		for _, r := range result.Requests {
+		select {
+		case <-hungry: // 请求下一页
+			r := <-requestChan
+			fmt.Println("Got next page, ", r.Url)
 			s.SubmitRequest(r)
-		}
+		case result := <-out: // 页面解析结果
+			for _, r := range result.Requests {
+				s.SubmitRequest(r)
+			}
 
-		e.dealItems(result.Items)
+			e.dealItems(result.Items)
+		}
 	}
 
 }
@@ -65,7 +71,7 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 	for {
 		r := <-workChan
 
-		log.Printf("Fetching %s, %s \n", r.Name,r.Url)
+		log.Printf("Fetching %s, %s \n", r.Name, r.Url)
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
 			continue

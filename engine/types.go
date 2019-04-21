@@ -27,7 +27,7 @@ type Engine interface {
 }
 
 type Scheduler interface {
-	Schedule()
+	Schedule(chan bool)
 	SubmitRequest(Request)
 	SubmitWorker(chan Request)
 	GetWorkCount() int

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/wuxiangzhou2010/imagespider/t66y/generator"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,14 +12,13 @@ import (
 	"github.com/wuxiangzhou2010/imagespider/scheduler"
 
 	"github.com/wuxiangzhou2010/imagespider/engine"
-	"github.com/wuxiangzhou2010/imagespider/t66y/parser"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
 )
 
 func main() {
 
 	e := engine.NewConcurrentEngine(config.C.GetImageChan())
-	e.Run(scheduler.NewScheduler(), generateStartPages())
+
+	e.Run(scheduler.NewScheduler(), generator.NewGenerator(config.C.GetStartPages()))
 
 	{
 		osSignals := make(chan os.Signal, 1)
@@ -28,17 +28,4 @@ func main() {
 	{
 		e.Shutdown()
 	}
-}
-
-func generateStartPages() (r []engine.Request) {
-
-	for _, url := range config.C.GetStartPages() {
-		r = append(r, engine.Request{
-			Url:        url,
-			ParserFunc: parser.ParseTopicList,
-			Agent:      my.NewAgent(),
-		})
-	}
-	return
-
 }

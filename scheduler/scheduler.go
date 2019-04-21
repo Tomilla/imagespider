@@ -1,6 +1,9 @@
 package scheduler
 
-import "github.com/wuxiangzhou2010/imagespider/engine"
+import (
+	"github.com/wuxiangzhou2010/imagespider/engine"
+	"time"
+)
 
 type Scheduler struct {
 	requestChan chan engine.Request
@@ -23,10 +26,13 @@ func NewScheduler() *Scheduler {
 	}
 }
 
-func (s *Scheduler) Schedule() {
+func (s *Scheduler) Schedule(hungry chan bool) {
 
 	var requestQ []engine.Request
 	var workQ []chan engine.Request
+	tick := time.Tick(4 * time.Second)
+
+	hungry <- true
 
 	go func() {
 
@@ -47,6 +53,10 @@ func (s *Scheduler) Schedule() {
 			case activeWorker <- activeRequest:
 				requestQ = requestQ[1:]
 				workQ = workQ[1:]
+			case <-tick:
+				if len(requestQ) == 0 {
+					hungry <- true
+				}
 
 			}
 		}
