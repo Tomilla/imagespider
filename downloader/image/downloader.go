@@ -18,7 +18,7 @@ func NewDownloader(imageConfig *config.ImageConfig) *downloader {
 }
 func (d *downloader) Run() {
 
-	if err := os.MkdirAll(d.Path, 0700); err != nil {
+	if err := os.MkdirAll(d.Path, 0755); err != nil {
 		panic(err)
 	}
 	readyChan := make(chan chan work)
@@ -34,7 +34,7 @@ func (d *downloader) Run() {
 		baseFolder := path.Join(d.Path, topic.Name)
 		//fmt.Println("BaseFolder", baseFolder)
 		if !d.UniqFolder { // 如果不是统一文件夹， 则需要分别创建文件夹
-			if err := os.MkdirAll(baseFolder, 0700); err != nil {
+			if err := os.MkdirAll(baseFolder, 0755); err != nil {
 				panic(err)
 			}
 		}
