@@ -74,6 +74,9 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 		log.Printf("Fetching %s, %s \n", r.Name, r.Url)
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
+			//panic(err)
+			log.Println("Fetching error:", err, r.Url)
+			s.SubmitWorker(workChan)
 			continue
 		}
 
@@ -97,4 +100,8 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 			log.Printf("Got item %s", item)
 		}
 	}
+}
+
+func (e *ConcurrentEngine) saveElasticSearch() {
+
 }
