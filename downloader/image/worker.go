@@ -78,6 +78,7 @@ func (w *worker) downloadWithPath(link, fileName string) error {
 
 	client := net.NewClient(false)
 	req, err := http.NewRequest("GET", link, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 t66y_com")
 	resp, err := client.Do(req)
 
 	//@@@@@@@@@@@@@@@@@
