@@ -28,6 +28,7 @@ type Config struct {
 	PageLimit    int         `json:"pageLimit"`
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
+	Engine       Engine      `json:"engine"`
 }
 
 func NewConfig() *Config {
@@ -74,6 +75,12 @@ func (c *Config) SetImageChan(ch chan model.Topic) {
 	defer c.Unlock()
 
 	c.Image.ImageChan = ch
+}
+func (c *Config) GetEngineWorkerCount() int {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.Engine.WorkerCount
 }
 
 func getConfigFileName() string {

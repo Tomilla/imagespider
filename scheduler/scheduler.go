@@ -10,21 +10,17 @@ import (
 type Scheduler struct {
 	requestChan chan engine.Request
 	workChan    chan chan engine.Request //可以接收Request
-	WorkerCount int
+
 }
 
 func (s *Scheduler) Shutdown() {
 
-}
-func (s *Scheduler) GetWorkCount() int {
-	return s.WorkerCount
 }
 
 func NewScheduler() *Scheduler {
 	return &Scheduler{
 		requestChan: make(chan engine.Request),
 		workChan:    make(chan chan engine.Request),
-		WorkerCount: 10,
 	}
 }
 

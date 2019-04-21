@@ -2,7 +2,10 @@ package engine
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/fetcher"
@@ -35,7 +38,7 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 	go s.Schedule(hungry) // scheduler started
 
 	w := newWorker()
-	for i := 0; i < s.GetWorkCount(); i++ {
+	for i := 0; i < config.C.GetEngineWorkerCount(); i++ {
 		go w.work(s, out) // 创建所有worker
 	}
 
@@ -113,11 +116,35 @@ func (e *ConcurrentEngine) saveElasticSearch(topic model.Topic) {
 
 	resp, err := client.Index().
 		Index("t66y").
-		Type("topics").
+		Type("topics").Id(hash(topic.Url)).
 		BodyJson(topic).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf(" %+v\n", resp)
+
+}
+
+func hash(s string) string {
+
+	// The pattern for generating a hash is `sha1.New()`,
+	// `sha1.Write(bytes)`, then `sha1.Sum([]byte{})`.
+	// Here we start with a new hash.
+	h := sha1.New()
+
+	// `Write` expects bytes. If you have a string `s`,
+	// use `[]byte(s)` to coerce it to bytes.
+	h.Write([]byte(s))
+
+	// This gets the finalized hash result as a byte
+	// slice. The argument to `Sum` can be used to append
+	// to an existing byte slice: it usually isn't needed.
+	bs := h.Sum(nil)
+
+	// SHA1 values are often printed in hex, for example
+	// in git commits. Use the `%x` format verb to convert
+	// a hash results to a hex string.
+	fmt.Println(s)
+	return hex.EncodeToString(bs)
 
 }

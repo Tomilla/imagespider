@@ -30,6 +30,6 @@ type Scheduler interface {
 	Schedule(chan bool)
 	SubmitRequest(Request)
 	SubmitWorker(chan Request)
-	GetWorkCount() int
+
 	Shutdown()
 }
