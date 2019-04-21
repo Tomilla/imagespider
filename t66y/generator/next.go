@@ -31,6 +31,10 @@ func (g *Generator) Generate() {
 	g.GenerateStartRequest(g.seeds)
 	for {
 		g.GenerateNextRequest()
+		if g.count > 20 {
+			close(g.requestChan)
+			return
+		}
 	}
 
 }
