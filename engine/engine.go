@@ -1,12 +1,13 @@
 package engine
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/fetcher"
 	"github.com/wuxiangzhou2010/imagespider/model"
-
+	"gopkg.in/olivere/elastic.v5"
 	"log"
 )
 
@@ -80,7 +81,7 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 			continue
 		}
 
-		ParseResult := r.ParserFunc(body)
+		ParseResult := r.ParserFunc(body, r.Url)
 		out <- ParseResult
 		s.SubmitWorker(workChan)
 	}
@@ -95,6 +96,8 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 		case model.Topic:
 			if imageChan := e.ImageChan; imageChan != nil {
 				imageChan <- item.(model.Topic) // 转换为topic 类型
+			} else {
+				e.saveElasticSearch(item.(model.Topic))
 			}
 		default:
 			log.Printf("Got item %s", item)
@@ -102,6 +105,19 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 	}
 }
 
-func (e *ConcurrentEngine) saveElasticSearch() {
+func (e *ConcurrentEngine) saveElasticSearch(topic model.Topic) {
+	client, err := elastic.NewClient(elastic.SetSniff(false))
+	if err != nil {
+		panic(err)
+	}
+
+	resp, err := client.Index().
+		Index("t66y").
+		Type("topics").
+		BodyJson(topic).Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(" %+v\n", resp)
 
 }

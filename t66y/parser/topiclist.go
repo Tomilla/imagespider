@@ -1,16 +1,16 @@
 package parser
 
 import (
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/engine"
+	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
 
 	"regexp"
 )
 
 var topicListRe = regexp.MustCompile(`<h3><a href="(htm_data/[0-9]*/[0-9]*/[0-9]*\.html)"[^>]*>([^<]+)</a>`)
 
-func ParseTopicList(contents []byte) engine.ParseResult {
+func ParseTopicList(contents []byte, url string) engine.ParseResult {
 
 	matches := topicListRe.FindAllSubmatch(contents, -1)
 	limit := config.C.GetPageLimit() // limit the topic count

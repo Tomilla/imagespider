@@ -16,7 +16,7 @@ var imageRe = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?:\/\
 var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
 var ImageCh = make(chan []*model.Topic, 20)
 
-func ParseTopic(contents []byte) engine.ParseResult {
+func ParseTopic(contents []byte, url string) engine.ParseResult {
 
 	imageMatches := imageRe.FindAllSubmatch(contents, -1)
 	if imageMatches == nil {
@@ -29,6 +29,7 @@ func ParseTopic(contents []byte) engine.ParseResult {
 	name := string(titleMatch[1])
 
 	t.Name = normalizeName(name)
+	t.Url = url
 
 	for _, m := range imageMatches {
 		url := string(m[2])

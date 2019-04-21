@@ -4,7 +4,7 @@ import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent"
 
 type Request struct {
 	Url        string
-	ParserFunc func([]byte) ParseResult
+	ParserFunc func([]byte, string) ParseResult
 	Agent      agent.Agent
 	Name       string
 }
