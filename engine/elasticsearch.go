@@ -31,6 +31,6 @@ func (e *ConcurrentEngine) saveElasticSearch(topic model.Topic) {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("[elasticsearch] %+v\n", topic.Name)
+	log.Printf("[saveElasticSearch] %+v %+v\n", topic.Name, topic.Url)
 
 }
