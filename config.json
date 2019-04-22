@@ -1,16 +1,16 @@
 {
   "image": {
     "path": "d:\\t66yImage",
-    "workerCount": 1,
+    "workerCount": 100,
     "isUniqFolder": true
   },
   "engine": {
-    "workerCount": 2,
+    "workerCount": 5,
     "elasticUrl": "http://172.16.3.116:9200"
   },
   "init": {
     "topicPerPage": 100,
-    "startPageNum": 20,
+    "startPageNum": 0,
     "endPageNum": 100,
     "seeds": [
       //亚洲无码原创
