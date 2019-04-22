@@ -8,6 +8,13 @@ put a `config.json` file in current folder
 
 default config is as below
 
+### Install Elasticsearch docker
+
+```sh
+docker pull elasticsearch:5.6.16
+docker run -d -p 9200:9200  elasticsearch:5.6.16
+```
+
 ```json
 {
   "image": {
@@ -54,7 +61,7 @@ default config is as below
 }
 ```
 
-## Downloaod image and save elastic search
+### Downloaod image and save elastic search
 
 ```sh
 go get github.com/wuxiangzhou2010/imagespider
@@ -62,7 +69,7 @@ cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
 go run github.com/wuxiangzhou2010/imagespider
 ```
 
-## Web search page
+### Web search page
 
 ```sh
 cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
