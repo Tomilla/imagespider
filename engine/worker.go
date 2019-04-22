@@ -1,8 +1,9 @@
 package engine
 
 import (
-	"github.com/wuxiangzhou2010/imagespider/fetcher"
 	"log"
+
+	"github.com/wuxiangzhou2010/imagespider/fetcher"
 )
 
 type Worker struct {
@@ -21,11 +22,11 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 	for {
 		r := <-workChan
 
-		log.Printf("Fetching %s, %s \n", r.Name, r.Url)
+		log.Printf("[engine worker] Fetching %s, url: %s \n", r.Name, r.Url)
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
 			//panic(err)
-			log.Println("Fetching error:", err, r.Name, r.Url)
+			log.Println("[engine worker] Fetching error:", err, r.Name, r.Url)
 			s.SubmitWorker(workChan)
 			continue
 		}

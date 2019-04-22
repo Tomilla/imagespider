@@ -1,15 +1,13 @@
 package engine
 
 import (
-	"context"
 	"fmt"
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/util"
+	"log"
 	"time"
 
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/model"
 	"gopkg.in/olivere/elastic.v5"
-	"log"
 )
 
 type ConcurrentEngine struct {
@@ -74,20 +72,7 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 				}
 			}
 		default:
-			log.Printf("Got item %s", item)
+			log.Printf("[engine dealItems ]Got item %s", item)
 		}
 	}
-}
-
-func (e *ConcurrentEngine) saveElasticSearch(topic model.Topic) {
-
-	resp, err := e.elastic.Index().
-		Index("t66y").
-		Type("topics").Id(util.Hash(topic.Url)). // hash string to get unique id
-		BodyJson(topic).Do(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf(" %+v\n", resp)
-
 }

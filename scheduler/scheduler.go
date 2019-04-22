@@ -42,8 +42,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 				activeRequest = requestQ[0]
 				activeWorker = workQ[0]
 			}
-			fmt.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
-				len(requestQ), cap(requestQ), len(workQ), cap(workQ))
+
 			select {
 			case newReq := <-s.requestChan:
 				requestQ = append(requestQ, newReq)
@@ -53,6 +52,8 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 				requestQ = requestQ[1:]
 				workQ = workQ[1:]
 			case <-tick:
+				fmt.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
+					len(requestQ), cap(requestQ), len(workQ), cap(workQ))
 				if len(requestQ) == 0 {
 					hungry <- true
 				}

@@ -3,7 +3,6 @@ package util
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"fmt"
 )
 
 func Hash(s string) string {
@@ -25,7 +24,7 @@ func Hash(s string) string {
 	// SHA1 values are often printed in hex, for example
 	// in git commits. Use the `%x` format verb to convert
 	// a hash results to a hex string.
-	fmt.Println(s)
+	//fmt.Println(s)
 	return hex.EncodeToString(bs)
 
 }
