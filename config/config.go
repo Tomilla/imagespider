@@ -70,6 +70,19 @@ func (c *Config) SetImageChan(ch chan model.Topic) {
 
 	c.Image.ImageChan = ch
 }
+func (c *Config) SetImageHungryChan(ch chan bool) {
+	c.Lock()
+	defer c.Unlock()
+
+	c.Image.HungryChan = ch
+}
+
+func (c *Config) GetImageHungryChan()chan bool {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.Image.HungryChan
+}
 func (c *Config) GetEngineWorkerCount() int {
 	c.Lock()
 	defer c.Unlock()

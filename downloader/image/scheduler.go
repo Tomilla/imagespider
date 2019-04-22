@@ -40,6 +40,11 @@ func (s *scheduler) schedule() {
 		case activeWorker <- activeWork:
 			readyQ = readyQ[1:]
 			workQ = workQ[1:]
+			if len(workQ) == 0 {
+				go func() {
+					config.C.GetImageHungryChan() <- true
+				}()
+			}
 		case <-ticker:
 			v := atomic.LoadInt32(&count)
 			if !atomic.CompareAndSwapInt32(&preCount, v, v) {

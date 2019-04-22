@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/engine"
 	"log"
 )
@@ -51,7 +52,11 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 				workQ = workQ[1:]
 
 				if len(requestQ) == 0 {
-					hungry <- true
+					select {
+					case <-config.C.GetImageHungryChan():
+						hungry <- true
+					default:
+					}
 				}
 			//case <-tick:
 				log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",

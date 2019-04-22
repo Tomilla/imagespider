@@ -7,6 +7,7 @@ type ImageConfig struct {
 	UniqFolder  bool   `json:"isUniqFolder"`
 	WorkerCount int    `json:"workerCount"`
 	ImageChan   chan model.Topic
+	HungryChan  chan bool
 }
 
 //type ImageConfig struct {
