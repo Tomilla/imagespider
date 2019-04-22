@@ -66,11 +66,12 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 		case model.Topic:
 			if imageChan := e.ImageChan; imageChan != nil {
 				imageChan <- item.(model.Topic) // 转换为topic 类型
-			} else {
-				if e.elastic != nil {
-					e.saveElasticSearch(item.(model.Topic))
-				}
 			}
+
+			if e.elastic != nil {
+				e.saveElasticSearch(item.(model.Topic))
+			}
+
 		default:
 			log.Printf("[engine dealItems ]Got item %s", item)
 		}
