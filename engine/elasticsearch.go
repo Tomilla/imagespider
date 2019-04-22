@@ -6,7 +6,10 @@ import (
 )
 
 func NewConnection() *elastic.Client {
-
+	endpoint := config.C.GetEngineElasticUrl()
+	if endpoint == "" {
+		return nil
+	}
 	client, err := elastic.NewClient(elastic.SetURL(config.C.GetEngineElasticUrl()), elastic.SetSniff(false))
 	if err != nil {
 		panic(err)
