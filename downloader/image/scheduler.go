@@ -22,7 +22,7 @@ func (s *scheduler) schedule() {
 	var workQ []work
 	var readyQ []chan work
 	var preCount int32
-	ticker := time.Tick(4 * time.Second)
+	ticker := time.Tick(1 * time.Second)
 	for {
 		var activeWork work
 		var activeWorker chan work

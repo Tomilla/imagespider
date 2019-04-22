@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/engine"
@@ -51,12 +51,13 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 			case activeWorker <- activeRequest:
 				requestQ = requestQ[1:]
 				workQ = workQ[1:]
-			case <-tick:
-				fmt.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
-					len(requestQ), cap(requestQ), len(workQ), cap(workQ))
+
 				if len(requestQ) == 0 {
 					hungry <- true
 				}
+			case <-tick:
+				log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
+					len(requestQ), cap(requestQ), len(workQ), cap(workQ))
 
 			}
 		}

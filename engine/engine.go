@@ -49,7 +49,7 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 			s.SubmitRequest(r)
 		case result := <-out: // 页面解析结果
 			for _, r := range result.Requests {
-				s.SubmitRequest(r)
+				go s.SubmitRequest(r)
 			}
 
 			e.dealItems(result.Items)
