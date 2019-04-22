@@ -1,33 +1,40 @@
 {
   "image": {
-    "path": "/Users/zwx/t66yImage",
-    "workerCount": 200,
+    "path": "d:\\t66yImage",
+    "workerCount": 1,
     "isUniqFolder": true
   },
-  "startPages": [
-    //亚洲无码原创
-    // "http://t66y.com/thread0806.php?fid=2",
-    // //亚洲有码原创
-    // "http://t66y.com/thread0806.php?fid=15",
-    // // 欧美原创
-    // "http://t66y.com/thread0806.php?fid=4",
-    //动漫原创区
-    // "http://t66y.com/thread0806.php?fid=5"
-    // // 国产原创区
-    // "http://t66y.com/thread0806.php?fid=25",
-    // //中字原创
-    // "http://t66y.com/thread0806.php?fid=26",
-    // // 转贴交流
-    // "http://t66y.com/thread0806.php?fid=27",
-    // // 新时代
-    // "http://t66y.com/thread0806.php?fid=8",
-    // //达盖尔
-    // "http://t66y.com/thread0806.php?fid=16",
-    // http下载
-    "http://t66y.com/thread0806.php?fid=21"
-  ],
-  "pageLimit": 1,
-
+  "engine": {
+    "workerCount": 2,
+    "elasticUrl": "http://172.16.3.116:9200"
+  },
+  "init": {
+    "topicPerPage": 100,
+    "startPageNum": 10,
+    "endPageNum": 100,
+    "seeds": [
+      //亚洲无码原创
+      // "http://t66y.com/thread0806.php?fid=2",
+      // //亚洲有码原创
+      // "http://t66y.com/thread0806.php?fid=15",
+      // // 欧美原创
+      // "http://t66y.com/thread0806.php?fid=4",
+      //动漫原创区
+      // "http://t66y.com/thread0806.php?fid=5"
+      // // 国产原创区
+      // "http://t66y.com/thread0806.php?fid=25",
+      // //中字原创
+      // "http://t66y.com/thread0806.php?fid=26",
+      // // 转贴交流
+      // "http://t66y.com/thread0806.php?fid=27",
+      // // 新时代
+      "http://t66y.com/thread0806.php?fid=8"
+      // //达盖尔
+      // "http://t66y.com/thread0806.php?fid=16",
+      // http下载
+      // "http://t66y.com/thread0806.php?fid=21"
+    ]
+  },
   "nameLenLimit": 60,
   "net": {
     "timeOut": 30,

@@ -15,17 +15,11 @@ import (
 )
 
 var C *Config
-var StartPages = []string{
-	//"http://t66y.com/thread0806.php?fid=8",  // 新时代
-	//"http://t66y.com/thread0806.php?fid=16", //达盖尔
-	"http://t66y.com/thread0806.php?fid=21", //下载区
-}
 
 type Config struct {
 	sync.RWMutex
 	Image        ImageConfig `json:"image"`
-	StartPages   []string    `json:"startPages"`
-	PageLimit    int         `json:"pageLimit"`
+	Init         Init        `jsonL"init"`
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 	Engine       Engine      `json:"engine"`
@@ -48,13 +42,13 @@ func (c *Config) GetStartPages() []string {
 	c.RLock()
 	defer c.RUnlock()
 
-	return c.StartPages
+	return c.Init.Seeds
 }
 func (c *Config) GetPageLimit() int {
 	c.RLock()
 	defer c.RUnlock()
 
-	return c.PageLimit
+	return c.Init.TopicPerPage
 }
 
 func (c *Config) GetImageConfig() *ImageConfig {
@@ -81,6 +75,25 @@ func (c *Config) GetEngineWorkerCount() int {
 	defer c.Unlock()
 
 	return c.Engine.WorkerCount
+}
+func (c *Config) GetEngineElasticUrl() string {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.Engine.ElasticUrl
+}
+func (c *Config) GetStartPageNum() int {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.Init.StartPageNum
+}
+
+func (c *Config) GetEndPageNum() int {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.Init.EndPageNum
 }
 
 func getConfigFileName() string {

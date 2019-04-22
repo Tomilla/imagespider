@@ -2,10 +2,9 @@ package engine
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/wuxiangzhou2010/imagespider/util"
 	"time"
 
 	"github.com/wuxiangzhou2010/imagespider/model"
@@ -16,6 +15,7 @@ import (
 type ConcurrentEngine struct {
 	ImageChan chan model.Topic
 	s         Scheduler
+	elastic   *elastic.Client
 }
 
 func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
@@ -25,12 +25,14 @@ func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 func (e *ConcurrentEngine) Shutdown() {
 	close(e.ImageChan) // 不继续发送图片下载
 	e.s.Shutdown()
+	e.elastic.Stop() // stop elasticSearch client
 	time.Sleep(10)
 
 }
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 
 	e.s = s
+	e.elastic = NewConnection() // new elastic client
 
 	out := make(chan ParseResult)
 	hungry := make(chan bool)
@@ -58,7 +60,6 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 
 }
 
-
 // deal all items that need not fetch again
 func (e *ConcurrentEngine) dealItems(items []interface{}) {
 	for _, item := range items {
@@ -77,42 +78,14 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 }
 
 func (e *ConcurrentEngine) saveElasticSearch(topic model.Topic) {
-	client, err := elastic.NewClient(elastic.SetSniff(false))
-	if err != nil {
-		panic(err)
-	}
 
-	resp, err := client.Index().
+	resp, err := e.elastic.Index().
 		Index("t66y").
-		Type("topics").Id(hash(topic.Url)).
+		Type("topics").Id(util.Hash(topic.Url)). // hash string to get unique id
 		BodyJson(topic).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf(" %+v\n", resp)
-
-}
-
-func hash(s string) string {
-
-	// The pattern for generating a hash is `sha1.New()`,
-	// `sha1.Write(bytes)`, then `sha1.Sum([]byte{})`.
-	// Here we start with a new hash.
-	h := sha1.New()
-
-	// `Write` expects bytes. If you have a string `s`,
-	// use `[]byte(s)` to coerce it to bytes.
-	h.Write([]byte(s))
-
-	// This gets the finalized hash result as a byte
-	// slice. The argument to `Sum` can be used to append
-	// to an existing byte slice: it usually isn't needed.
-	bs := h.Sum(nil)
-
-	// SHA1 values are often printed in hex, for example
-	// in git commits. Use the `%x` format verb to convert
-	// a hash results to a hex string.
-	fmt.Println(s)
-	return hex.EncodeToString(bs)
 
 }

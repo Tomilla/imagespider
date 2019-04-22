@@ -9,8 +9,8 @@ import (
 func TestGenerator_GenerateStartRequest(t *testing.T) {
 	ch := NewGenerator(config.C.GetStartPages())
 	go func() {
-		for i := 0; i < 10; i++ {
-			t.Logf("%+v", <-ch)
+		for v := range ch {
+			t.Logf("%+v", v)
 		}
 	}()
 	time.Sleep(100 * time.Millisecond)
