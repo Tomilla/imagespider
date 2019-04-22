@@ -65,7 +65,8 @@ go run github.com/wuxiangzhou2010/imagespider
 ## Web search page
 
 ```sh
-go run github.com/wuxiangzhou2010/imagespider/front
+cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
+go run github.com/wuxiangzhou2010/imagespider/frontend
 ```
 
 ## arch
