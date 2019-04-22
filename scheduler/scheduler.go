@@ -1,10 +1,8 @@
 package scheduler
 
 import (
-	"log"
-	"time"
-
 	"github.com/wuxiangzhou2010/imagespider/engine"
+	"log"
 )
 
 type Scheduler struct {
@@ -28,7 +26,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 
 	var requestQ []engine.Request
 	var workQ []chan engine.Request
-	tick := time.Tick(1 * time.Second)
+	//tick := time.Tick(1 * time.Second)
 
 	hungry <- true
 
@@ -55,7 +53,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 				if len(requestQ) == 0 {
 					hungry <- true
 				}
-			case <-tick:
+			//case <-tick:
 				log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
 					len(requestQ), cap(requestQ), len(workQ), cap(workQ))
 
