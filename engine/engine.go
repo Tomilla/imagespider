@@ -7,13 +7,12 @@ import (
 
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/model"
-	"gopkg.in/olivere/elastic.v5"
 )
 
 type ConcurrentEngine struct {
 	ImageChan chan model.Topic
 	s         Scheduler
-	elastic   *elastic.Client
+	elastic   chan model.Topic
 }
 
 func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
@@ -23,14 +22,14 @@ func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 func (e *ConcurrentEngine) Shutdown() {
 	close(e.ImageChan) // 不继续发送图片下载
 	e.s.Shutdown()
-	e.elastic.Stop() // stop elasticSearch client
+	//e.elastic.Stop() // stop elasticSearch client
 	time.Sleep(10)
 
 }
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 
 	e.s = s
-	e.elastic = NewConnection() // new elastic client
+	e.elastic = config.C.GetElasticChan() // new elastic client
 
 	out := make(chan ParseResult)
 	hungry := make(chan bool)
@@ -77,11 +76,10 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 		switch item.(type) {
 		case model.Topic:
 			if imageChan := e.ImageChan; imageChan != nil {
-				imageChan <- item.(model.Topic) // 转换为topic 类型
+				imageChan <- item.(model.Topic) // save to image
 			}
-
 			if e.elastic != nil {
-				e.saveElasticSearch(item.(model.Topic))
+				e.elastic <- item.(model.Topic) // save to elasticSearch
 			}
 
 		default:

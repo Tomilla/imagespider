@@ -20,10 +20,21 @@ type Config struct {
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 	Engine       Engine      `json:"engine"`
+	elastic      Elastic
 }
 
 func NewConfig() *Config {
 	return LoadConfig()
+}
+func (c *Config) SetElasticChan(ch chan model.Topic) {
+	c.Lock()
+	defer c.Unlock()
+	c.elastic.topicChan = ch
+}
+func (c *Config) GetElasticChan() chan model.Topic {
+	c.Lock()
+	defer c.Unlock()
+	return c.elastic.topicChan
 }
 func (c *Config) GetNameLenLimit() int {
 	c.RLock()

@@ -16,7 +16,7 @@ func init() {
 
 	d := NewDownloader(config.C.GetImageConfig())
 
-	go d.Run() // start downloader
+	go d.Run() // start persist
 
 	//fmt.Println("Image init")
 

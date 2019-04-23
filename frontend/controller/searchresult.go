@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/wuxiangzhou2010/imagespider/engine"
+	"github.com/wuxiangzhou2010/imagespider/persist/elasticsearch"
 
 	"context"
 	"reflect"
@@ -16,7 +16,6 @@ import (
 	mo "github.com/wuxiangzhou2010/imagespider/model"
 
 	"github.com/wuxiangzhou2010/imagespider/frontend/view"
-	"gopkg.in/olivere/elastic.v5"
 )
 
 type SearchResultHandler struct {
@@ -26,7 +25,7 @@ type SearchResultHandler struct {
 
 func CreateSearchResultHandler(
 	template string) SearchResultHandler {
-	client := engine.NewConnection()
+	client := elasticsearch.NewConnection()
 
 	return SearchResultHandler{
 		view: view.CreateSearchResultView(
