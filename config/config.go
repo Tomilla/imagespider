@@ -3,15 +3,12 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"os"
 	"path"
-	"regexp"
-	"strings"
 	"sync"
 
 	"github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/wuxiangzhou2010/jsonuncommenter"
 )
 
 var C *Config
@@ -77,7 +74,7 @@ func (c *Config) SetImageHungryChan(ch chan bool) {
 	c.Image.HungryChan = ch
 }
 
-func (c *Config) GetImageHungryChan()chan bool {
+func (c *Config) GetImageHungryChan() chan bool {
 	c.Lock()
 	defer c.Unlock()
 
@@ -135,7 +132,7 @@ func LoadConfig() (c *Config) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	newReader := removeComment(f)
+	newReader := jsonuncommenter.RemoveComment(f)
 	defer f.Close()
 
 	jsonParser := json.NewDecoder(newReader)
@@ -143,28 +140,6 @@ func LoadConfig() (c *Config) {
 
 	//PrintConfig(c)
 	return
-}
-
-//reference: https://stackoverflow.com/questions/12682405/strip-out-c-style-comments-from-a-byte
-
-func removeComment(reader io.Reader) (newReader io.Reader) {
-
-	bs, err := ioutil.ReadAll(reader)
-	if err != nil {
-		panic(err)
-	}
-	s := string(bs)
-	//fmt.Println("before ", s)
-	re1 := regexp.MustCompile(`(?im)^\s+\/\/.*$`) // 整行注释
-
-	s = re1.ReplaceAllString(s, "")
-	//fmt.Println("after1 ", s)
-	re2 := regexp.MustCompile(`\/\/[^"\[\]]+\n`) // 行末
-	s = re2.ReplaceAllString(s, "")
-	//fmt.Println("after2 ", s)
-	newReader = strings.NewReader(s)
-	return
-
 }
 
 func PrintConfig(cfg *Config) {
