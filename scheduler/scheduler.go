@@ -56,12 +56,18 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 			case <-tick:
 				if len(requestQ) == 0 && len(workQ) == config.C.GetEngineWorkerCount() {
 					ch := config.C.GetImageHungryChan()
-					select {
-					case <-ch:
+					if ch == nil {
 						hungry <- true
 						time.Sleep(3)
-					default:
+					} else {
+						select {
+						case <-ch:
+							hungry <- true
+							time.Sleep(3)
+						default:
+						}
 					}
+
 				}
 				v := atomic.LoadInt32(&count)
 				if !atomic.CompareAndSwapInt32(&preCount, v, v) {
