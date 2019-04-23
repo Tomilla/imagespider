@@ -1,9 +1,12 @@
 package scheduler
 
 import (
+	"log"
+	"sync/atomic"
+	"time"
+
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/engine"
-	"log"
 )
 
 type Scheduler struct {
@@ -27,12 +30,12 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 
 	var requestQ []engine.Request
 	var workQ []chan engine.Request
-	//tick := time.Tick(1 * time.Second)
+	tick := time.Tick(2 * time.Second)
 
 	hungry <- true
-
+	var count int32
 	go func() {
-
+		var preCount int32
 		for {
 
 			var activeWorker chan engine.Request
@@ -50,18 +53,22 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 			case activeWorker <- activeRequest:
 				requestQ = requestQ[1:]
 				workQ = workQ[1:]
-
-				if len(requestQ) == 0 {
+			case <-tick:
+				if len(requestQ) == 0 && len(workQ) == config.C.GetEngineWorkerCount() {
+					ch := config.C.GetImageHungryChan()
 					select {
-					case <-config.C.GetImageHungryChan():
+					case <-ch:
 						hungry <- true
+						time.Sleep(3)
 					default:
 					}
 				}
-			//case <-tick:
-				log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
-					len(requestQ), cap(requestQ), len(workQ), cap(workQ))
-
+				v := atomic.LoadInt32(&count)
+				if !atomic.CompareAndSwapInt32(&preCount, v, v) {
+					preCount = v
+					log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
+						len(requestQ), cap(requestQ), len(workQ), cap(workQ))
+				}
 			}
 		}
 	}()

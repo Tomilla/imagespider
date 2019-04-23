@@ -41,12 +41,24 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 		go w.work(s, out) // 创建所有worker
 	}
 
+	go func() {
+		for {
+			select {
+			case <-hungry: // 请求下一页
+				r, more := <-requestChan
+				if more {
+					fmt.Println("Got next page, ", r.Url)
+					s.SubmitRequest(r)
+				} else {
+					fmt.Println("All initial pages are sent")
+					return
+				}
+			}
+		}
+	}()
+
 	for {
 		select {
-		case <-hungry: // 请求下一页
-			r := <-requestChan
-			fmt.Println("Got next page, ", r.Url)
-			s.SubmitRequest(r)
 		case result := <-out: // 页面解析结果
 			for _, r := range result.Requests {
 				go s.SubmitRequest(r)
@@ -73,7 +85,7 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 			}
 
 		default:
-			log.Printf("[engine dealItems ]Got item %s", item)
+			log.Printf("[engine dealItems] Got item %s", item)
 		}
 	}
 }

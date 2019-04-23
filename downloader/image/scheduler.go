@@ -1,6 +1,7 @@
 package image
 
 import (
+	"fmt"
 	"log"
 	"sync/atomic"
 	"time"
@@ -22,7 +23,7 @@ func (s *scheduler) schedule() {
 	var workQ []work
 	var readyQ []chan work
 	var preCount int32
-	ticker := time.Tick(1 * time.Second)
+	ticker := time.Tick(2 * time.Second)
 	for {
 		var activeWork work
 		var activeWorker chan work
@@ -40,22 +41,22 @@ func (s *scheduler) schedule() {
 		case activeWorker <- activeWork:
 			readyQ = readyQ[1:]
 			workQ = workQ[1:]
-			if len(workQ) == 0 {
-				go func() {
-					config.C.GetImageHungryChan() <- true
-				}()
-			}
+
 		case <-ticker:
 			v := atomic.LoadInt32(&count)
 			if !atomic.CompareAndSwapInt32(&preCount, v, v) {
-
 				preCount = v
-
 				log.Printf("[Downloader worker] #%d downloaded [workQ len %d cap %d], [readyQ len %d cap %d]\n",
 					v, len(workQ), cap(workQ), len(readyQ), cap(readyQ))
-
 			}
 
+			// 如果任务为空了， 则请求添加任务
+			if len(workQ) == 0 && len(readyQ) == s.workerCount {
+				ch := config.C.GetImageHungryChan()
+				ch <- true
+				fmt.Println("[All image requests are done, request more]")
+				time.Sleep(5)
+			}
 		}
 	}
 
