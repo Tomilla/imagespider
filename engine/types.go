@@ -1,11 +1,9 @@
 package engine
 
-import "github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent"
-
 type Request struct {
 	Url        string
 	ParserFunc func([]byte, string) ParseResult
-	Agent      agent.Agent
+	Agent      string
 	Name       string
 }
 type ParseResult struct {
@@ -13,13 +11,13 @@ type ParseResult struct {
 	Items    []interface{}
 }
 
-func NewParseResult(items []interface{}) *ParseResult {
-	return &ParseResult{Items: items}
-}
+// func NewParseResult(items []interface{}) *ParseResult {
+//     return &ParseResult{Items: items}
+// }
 
-func NilParser([]byte) ParseResult {
-	return ParseResult{}
-}
+// func NilParser([]byte) ParseResult {
+//     return ParseResult{}
+// }
 
 type Engine interface {
 	Run(s Scheduler, request []Request)

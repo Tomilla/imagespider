@@ -1,11 +1,13 @@
 package generator
 
 import (
+	"strconv"
+
+	"github.com/corpix/uarand"
+
 	"github.com/wuxiangzhou2010/imagespider/config"
 	"github.com/wuxiangzhou2010/imagespider/engine"
 	"github.com/wuxiangzhou2010/imagespider/t66y/parser"
-	"github.com/wuxiangzhou2010/luandun/go/spider_proj/crawler/util/agent/my"
-	"strconv"
 )
 
 const nextString = "&search=&page="
@@ -51,7 +53,7 @@ func (g *Generator) GenerateStartRequest(seeds []string) {
 		g.startRequests = append(g.startRequests, engine.Request{
 			Url:        url,
 			ParserFunc: parser.ParseTopicList,
-			Agent:      my.NewAgent(),
+			Agent:      uarand.GetRandom(),
 		})
 	}
 	return

@@ -7,8 +7,9 @@ import (
 	"path"
 	"sync"
 
-	"github.com/wuxiangzhou2010/imagespider/model"
 	"github.com/wuxiangzhou2010/jsonuncommenter"
+
+	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
 var C *Config
@@ -16,7 +17,7 @@ var C *Config
 type Config struct {
 	sync.RWMutex
 	Image        ImageConfig `json:"image"`
-	Init         Init        `jsonL"init"`
+	Init         Init        `json:"init"`
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 	Engine       Engine      `json:"engine"`
@@ -136,10 +137,14 @@ func (c *Config) GetNetTimeOut() int {
 }
 
 // LoadConfig, load config
+//noinspection GoUnhandledErrorResult
 func LoadConfig() (c *Config) {
 
 	filename := getConfigFileName()
 	f, err := os.Open(filename)
+	if f == nil {
+		panic("illegal file")
+	}
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -149,7 +154,7 @@ func LoadConfig() (c *Config) {
 	jsonParser := json.NewDecoder(newReader)
 	jsonParser.Decode(&c)
 
-	//PrintConfig(c)
+	PrintConfig(c)
 	return
 }
 
