@@ -1,23 +1,30 @@
 package config
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"sync"
+	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/wuxiangzhou2010/jsonuncommenter"
 
 	"github.com/wuxiangzhou2010/imagespider/model"
 )
 
 var C *Config
+var DB *sql.DB
 
 type Config struct {
 	sync.RWMutex
 	Image        ImageConfig `json:"image"`
 	Init         Init        `json:"init"`
+	Log          Log         `json:"log"`
+	Db           DBConfig    `json:"db"`
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 	Engine       Engine      `json:"engine"`
@@ -136,6 +143,30 @@ func (c *Config) GetNetTimeOut() int {
 
 }
 
+func (c *Config) GetLogPath() string {
+	return c.Log.Path
+}
+
+func (c *Config) GetDbEngine() string {
+	return c.Db.Engine
+}
+
+func (c *Config) GetDbDSN() string {
+	return c.Db.DSN
+}
+
+func (c *Config) GetDbMaxOpenConns() int {
+	return c.Db.MaxOpenConns
+}
+
+func (c *Config) GetDbMaxIdleConns() int {
+	return c.Db.MaxIdleConns
+}
+
+func (c *Config) GetDbConnMaxLifetime() time.Duration {
+	return time.Duration(c.Db.ConnMaxLifetime)
+}
+
 // LoadConfig, load config
 //noinspection GoUnhandledErrorResult
 func LoadConfig() (c *Config) {
@@ -159,10 +190,19 @@ func LoadConfig() (c *Config) {
 }
 
 func PrintConfig(cfg *Config) {
-
 	fmt.Printf("%+v\n", cfg)
 }
 
 func init() {
+	var err error
 	C = NewConfig() // default config
+
+	DB, err = sql.Open(C.GetDbEngine(), C.GetDbDSN())
+	if err != nil {
+		log.Panicf("cannot connect to database, since: %v", err)
+	}
+
+	DB.SetMaxOpenConns(C.GetDbMaxOpenConns())
+	DB.SetMaxIdleConns(C.GetDbMaxIdleConns())
+	DB.SetConnMaxLifetime(C.GetDbConnMaxLifetime())
 }

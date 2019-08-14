@@ -11,14 +11,24 @@
   "init": {
     "topicPerPage": 100,
     "startPageNum": 0,
-    "endPageNum": 100,
+    "endPageNum": 5,
     "seeds": [
-       "http://t66y.com/thread0806.php?fid=16"
+      "http://t66y.com/thread0806.php?fid=16"
     ]
   },
   "nameLenLimit": 60,
   "net": {
     "timeOut": 30,
-    "proxyUrl": "socks5://localhost:1080"
+    "proxyUrl": "socks5://localhost:1091"
+  },
+  "log": {
+    "path": "/tmp/image_spider.txt"
+  },
+  "db": {
+    "engine": "mysql",
+    "DSN": "root:VwX?U9s%aGf3R!o.@tcp(localhost:3306)/go_image_spider?charset=utf8mb4,utf8",
+    "maxOpenConns": 256,
+    "maxIdleConns": 100,
+    "connMaxLifetime": 600
   }
 }

@@ -6,5 +6,6 @@ import (
 )
 
 func init() {
+	//noinspection GoUnhandledErrorResult
 	go http.ListenAndServe(":6060", nil)
 }
