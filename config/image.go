@@ -11,7 +11,7 @@ type ImageConfig struct {
 }
 
 // type ImageConfig struct {
-//	Path        string `json:"path"`// 路径
-//	UniqFolder  bool`json:"isUniqFolder"`
-//	WorkerCount int	`json:"workerCount"`
+// 	Path        string `json:"path"`// 路径
+// 	UniqFolder  bool`json:"isUniqFolder"`
+// 	WorkerCount int	`json:"workerCount"`
 // }

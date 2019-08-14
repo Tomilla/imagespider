@@ -22,7 +22,7 @@ func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 func (e *ConcurrentEngine) Shutdown() {
 	close(e.ImageChan) // 不继续发送图片下载
 	e.s.Shutdown()
-	//e.elastic.Stop() // stop elasticSearch client
+	// e.elastic.Stop() // stop elasticSearch client
 	time.Sleep(10)
 
 }

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/wuxiangzhou2010/imagespider/t66y/generator"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/wuxiangzhou2010/imagespider/t66y/generator"
 
 	"github.com/wuxiangzhou2010/imagespider/config"
 

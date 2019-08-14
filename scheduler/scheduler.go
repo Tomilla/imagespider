@@ -11,8 +11,7 @@ import (
 
 type Scheduler struct {
 	requestChan chan engine.Request
-	workChan    chan chan engine.Request //可以接收Request
-
+	workChan    chan chan engine.Request // 可以接收Request
 }
 
 func (s *Scheduler) Shutdown() {

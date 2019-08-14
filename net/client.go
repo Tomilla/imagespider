@@ -13,9 +13,9 @@ type Client struct{}
 
 func NewClient(useProxy bool) *http.Client {
 
-	tr := &http.Transport{ //解决x509: certificate signed by unknown authority
+	tr := &http.Transport{ // 解决x509: certificate signed by unknown authority
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		//Proxy:           http.ProxyURL(proxyURL),
+		// Proxy:           http.ProxyURL(proxyURL),
 	}
 	if useProxy {
 		proxyStr := config.C.GetProxyURL()
@@ -32,7 +32,7 @@ func NewClient(useProxy bool) *http.Client {
 	timeOut := config.C.GetNetTimeOut()
 	client := &http.Client{
 		Timeout:   time.Duration(timeOut) * time.Second,
-		Transport: tr, //解决x509: certificate signed by unknown authority
+		Transport: tr, // 解决x509: certificate signed by unknown authority
 	}
 
 	return client

@@ -25,7 +25,7 @@ func (w *Worker) work(s Scheduler, out chan ParseResult) {
 		log.Printf("[engine worker] Fetching %s, url: %s \n", r.Name, r.Url)
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
-			//panic(err)
+			// panic(err)
 			log.Println("[engine worker] Fetching error:", err, r.Name, r.Url)
 			s.SubmitWorker(workChan)
 			continue

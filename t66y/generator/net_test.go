@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"github.com/wuxiangzhou2010/imagespider/config"
 	"testing"
 	"time"
+
+	"github.com/wuxiangzhou2010/imagespider/config"
 )
 
 func TestGenerator_GenerateStartRequest(t *testing.T) {

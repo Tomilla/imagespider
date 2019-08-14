@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
 	"sync/atomic"
 
 	"github.com/wuxiangzhou2010/imagespider/net"
@@ -64,7 +63,7 @@ func (w *worker) Download(task work) {
 
 	atomic.AddInt32(&count, 1)
 
-	//log.Printf("#%d downloaded %s", count, task.fileName)
+	// log.Printf("#%d downloaded %s", count, task.fileName)
 
 }
 
@@ -73,16 +72,16 @@ func (w *worker) downloadWithPath(link, fileName string) error {
 	if pathExist(fileName) {
 		return nil
 	}
-	//resp, err := http.Get(link)
-	//@@@@@@@@@@@@@@@@@
+	// resp, err := http.Get(link)
+	// @@@@@@@@@@@@@@@@@
 
 	client := net.NewClient(false)
 	req, err := http.NewRequest("GET", link, nil)
-	//req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 t66y_com")
+	// req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 t66y_com")
 	req.Header.Set("User-Agent", net.GetRandomUserAgent())
 	resp, err := client.Do(req)
 
-	//@@@@@@@@@@@@@@@@@
+	// @@@@@@@@@@@@@@@@@
 
 	if err != nil {
 		return err

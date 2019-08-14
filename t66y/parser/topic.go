@@ -77,29 +77,29 @@ func isDup(s string) bool {
 	case strings.Contains(s, `/i/?i=u`): // 并不是图片文件
 		result = true // 如 https://www.yuoimg.com/u/20190218/12543160.jpg
 	// case strings.Contains(s, `www.kanjiantu.com/image/`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `sb88y.net`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `htm`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `h34229`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `img599`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `667um`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `51668`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `x6img`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `dioimg`):
-	//	result = true
+	// 	result = true
 	// case strings.Contains(s, `sinaimg`):
 	//  result = true
 	case strings.Contains(s, `imagexport`): // 这个网址不直接提供图片文件
 		result = true
 	// case strings.Contains(s, `?`):
-	//	return true
+	// 	return true
 	default:
 
 	}
@@ -108,20 +108,20 @@ func isDup(s string) bool {
 
 // func filter(b []byte) []byte {
 //
-//	if !isDup(b) {
-//		return b
-//	}
+// 	if !isDup(b) {
+// 		return b
+// 	}
 //
-//	s := string(b)
-//	switch {
-//	case strings.Contains(s, `/i/?i=u`):
-//		//fmt.Println("before  Replaced ", s)
-//		s := strings.Replace(s, `i/?i=u`, `u`, -1)
+// 	s := string(b)
+// 	switch {
+// 	case strings.Contains(s, `/i/?i=u`):
+// 		//fmt.Println("before  Replaced ", s)
+// 		s := strings.Replace(s, `i/?i=u`, `u`, -1)
 //
-//		//fmt.Println("after Replaced ", s)
-//		return []byte(s)
-//	default:
-//		return b
-//	}
+// 		//fmt.Println("after Replaced ", s)
+// 		return []byte(s)
+// 	default:
+// 		return b
+// 	}
 //
 // }

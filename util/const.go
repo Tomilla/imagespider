@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-var DateLayout string = "2006-01-02"
-var DateDefault string = "3000-01-01"
-var DateTimeLayout string = "2006-01-02 15:04"
-var DateTimeDefault string = "3000-01-01 01:01:00"
+var DateLayout = "2006-01-02"
+var DateDefault = "3000-01-01"
+var DateTimeLayout = "2006-01-02 15:04"
+var DateTimeDefault = "3000-01-01 01:01:00"
 var TimeZone = "Asia/Shanghai"
 var TZ *time.Location
 

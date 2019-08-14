@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-var WhiteSpace string = " \t\n\r\x0b\x0c"
+var WhiteSpace = " \t\n\r\x0b\x0c"
 
 // https://github.com/DaddyOh/golang-samples/blob/master/pad.go
 // RightPad2Len

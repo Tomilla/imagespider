@@ -1,16 +1,14 @@
 package controller
 
 import (
+	"context"
 	"net/http"
+	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/wuxiangzhou2010/imagespider/persist/elasticsearch"
-
-	"context"
-	"reflect"
-
-	"regexp"
 
 	"github.com/wuxiangzhou2010/imagespider/frontend/model"
 	mo "github.com/wuxiangzhou2010/imagespider/model"
