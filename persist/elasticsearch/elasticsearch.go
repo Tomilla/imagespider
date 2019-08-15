@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"gopkg.in/olivere/elastic.v5"
+	elastic "github.com/elastic/go-elasticsearch/v7"
 
 	"github.com/Tomilla/imagespider/config"
 	"github.com/Tomilla/imagespider/model"
@@ -21,7 +21,12 @@ func NewConnection() *elastic.Client {
 	if endpoint == "" {
 		return nil
 	}
-	client, err := elastic.NewClient(elastic.SetURL(config.C.GetEngineElasticUrl()), elastic.SetSniff(false))
+	cfg := elastic.Config{
+		Addresses: []string{
+			config.C.GetEngineElasticUrl(),
+		},
+	}
+	client, err := elastic.NewClient(cfg)
 	if err != nil {
 		panic(err)
 	}

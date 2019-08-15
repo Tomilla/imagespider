@@ -154,7 +154,19 @@ func getConfigFileName() string {
 			panic(err)
 		}
 	}
-	return path.Join(wd, "config.json")
+	// load local config first
+
+	var finalPath string
+	finalPath = path.Join(wd, "local_config.json")
+	if util.CheckPathExists(finalPath) {
+		return finalPath
+	} else {
+		finalPath = path.Join(wd, "config.json")
+		if !util.CheckPathExists(finalPath) {
+			log.Panicln("cannot find config file")
+		}
+		return finalPath
+	}
 }
 
 func (c *Config) GetProxyURL() string {

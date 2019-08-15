@@ -14,7 +14,7 @@ import (
 // var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+[^s])['"]`)
 
 var imageRe = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?://[^'"]+(jpg|png|jpeg|gif))['"]`)
-var titleRe = regexp.MustCompile(`<title>([^<]+)</title>`)
+var titleRe = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+\s*)</title>`)
 
 // var ImageCh = make(chan []*model.Topic, 20)
 
@@ -31,7 +31,9 @@ func ParseTopic(contents []byte, url string) engine.ParseResult {
 	t := model.Topic{}
 	name := string(titleMatch[1])
 
+	println("-->", name)
 	t.Name = normalizeName(name)
+	println("==>", t.Name)
 	t.Url = url
 
 	for _, m := range imageMatches {
@@ -49,25 +51,16 @@ func ParseTopic(contents []byte, url string) engine.ParseResult {
 func normalizeName(s string) string {
 	// s = strings.Trim(s, "[]")
 	// fmt.Println("before -- > ", s)
-	r := []rune(s)
-	for i, v := range r {
-		if v == '-' {
+	limit := config.C.GetNameLenLimit()
+	result := s
 
-			r := r[:i-1] // in case of long filename
-			limit := config.C.GetNameLenLimit()
-			if len(r) > limit {
-				r = r[:limit]
-			}
-
-			// fmt.Println("after --> ", result)
-			result := string(r)
-			if strings.Contains(result, `/`) { // 去除名字中的反斜杠
-				result = strings.Replace(result, `/`, ``, -1)
-			}
-			return result
-		}
+	if strings.Contains(result, `/`) { // 去除名字中的反斜杠
+		result = strings.Replace(result, `/`, ``, -1)
 	}
-	return ""
+	if len(result) > limit {
+		result = result[:limit]
+	}
+	return result
 }
 
 // delete duplicates
