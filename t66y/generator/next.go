@@ -5,9 +5,9 @@ import (
 
 	"github.com/corpix/uarand"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/engine"
-	"github.com/wuxiangzhou2010/imagespider/t66y/parser"
+	"github.com/Tomilla/imagespider/config"
+	"github.com/Tomilla/imagespider/engine"
+	"github.com/Tomilla/imagespider/t66y/parser"
 )
 
 const nextString = "&search=&page="

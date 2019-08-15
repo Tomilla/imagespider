@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/Tomilla/imagespider/config"
 )
 
 func TestGenerator_GenerateStartRequest(t *testing.T) {

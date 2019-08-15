@@ -3,7 +3,7 @@ package engine
 import (
 	"log"
 
-	"github.com/wuxiangzhou2010/imagespider/fetcher"
+	"github.com/Tomilla/imagespider/fetcher"
 )
 
 type Worker struct {

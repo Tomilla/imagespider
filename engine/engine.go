@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/Tomilla/imagespider/config"
+	"github.com/Tomilla/imagespider/model"
 )
 
 type ConcurrentEngine struct {

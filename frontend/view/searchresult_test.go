@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"imooc.com/ccmouse/learngo/crawler/engine"
-	"imooc.com/ccmouse/learngo/crawler/frontend/model"
-	common "imooc.com/ccmouse/learngo/crawler/model"
+	"github.com/Tomilla/imagespider/frontend/model"
+	"github.com/Tomilla/imagespider/imooc/engine"
+	imooc_model "github.com/Tomilla/imagespider/imooc/model"
 )
 
 func TestSearchResultView_Render(t *testing.T) {
@@ -17,7 +17,12 @@ func TestSearchResultView_Render(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer out.Close()
+	defer (func() {
+		err := out.Close()
+		if err != nil {
+			panic("cannot close the file")
+		}
+	})()
 
 	page := model.SearchResult{}
 	page.Hits = 123
@@ -25,18 +30,18 @@ func TestSearchResultView_Render(t *testing.T) {
 		Url:  "http://album.zhenai.com/u/108906739",
 		Type: "zhenai",
 		Id:   "108906739",
-		Payload: common.Profile{
+		Payload: imooc_model.Profile{
 			Age:        34,
 			Height:     162,
 			Weight:     57,
 			Income:     "3001-5000元",
 			Gender:     "女",
 			Name:       "安静的雪",
-			Xinzuo:     "牡羊座",
+			Xingzuo:    "牡羊座",
 			Occupation: "人事/行政",
 			Marriage:   "离异",
 			House:      "已购房",
-			Hokou:      "山东菏泽",
+			Hukou:      "山东菏泽",
 			Education:  "大学本科",
 			Car:        "未购车",
 		},
@@ -50,5 +55,4 @@ func TestSearchResultView_Render(t *testing.T) {
 		t.Error(err)
 	}
 
-	// TODO: verify contents in template.test.html
 }

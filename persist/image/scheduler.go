@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/Tomilla/imagespider/config"
 )
 
 type scheduler struct {

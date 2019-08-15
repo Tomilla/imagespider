@@ -8,12 +8,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/wuxiangzhou2010/imagespider/persist/elasticsearch"
+	"gopkg.in/olivere/elastic.v5"
 
-	"github.com/wuxiangzhou2010/imagespider/frontend/model"
-	mo "github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/Tomilla/imagespider/frontend/model"
+	mo "github.com/Tomilla/imagespider/model"
+	"github.com/Tomilla/imagespider/persist/elasticsearch"
 
-	"github.com/wuxiangzhou2010/imagespider/frontend/view"
+	"github.com/Tomilla/imagespider/frontend/view"
 )
 
 type SearchResultHandler struct {

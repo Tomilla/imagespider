@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 
-	"github.com/wuxiangzhou2010/imagespider/net"
+	"github.com/Tomilla/imagespider/net"
 )
 
 type Fetcher interface {

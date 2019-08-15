@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"io"
 
-	"github.com/wuxiangzhou2010/imagespider/frontend/model"
+	"github.com/Tomilla/imagespider/frontend/model"
 )
 
 type SearchResultView struct {

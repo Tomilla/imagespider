@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/wuxiangzhou2010/imagespider/frontend/controller"
+	"github.com/Tomilla/imagespider/frontend/controller"
 )
 
 func main() {

@@ -12,9 +12,9 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/corpix/uarand"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/engine"
-	"github.com/wuxiangzhou2010/imagespider/util"
+	"github.com/Tomilla/imagespider/config"
+	"github.com/Tomilla/imagespider/engine"
+	"github.com/Tomilla/imagespider/util"
 )
 
 var topicListRe = regexp.MustCompile(`<h3><a href="(htm_data/[0-9]*/[0-9]*/[0-9]*\.html)"[^>]*>([^<]+)</a>`)

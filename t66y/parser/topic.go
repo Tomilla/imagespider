@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/Tomilla/imagespider/config"
 
-	"github.com/wuxiangzhou2010/imagespider/engine"
-	"github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/Tomilla/imagespider/engine"
+	"github.com/Tomilla/imagespider/model"
 )
 
 // var imageRe = regexp.MustCompile(`(data-src|data-link|src)=['"](http[s]?://[^'"]+[^s])['"]`)

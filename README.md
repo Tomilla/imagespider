@@ -31,26 +31,7 @@ docker run -d -p 9200:9200  elasticsearch:5.6.16
     "startPageNum": 20,
     "endPageNum": 100,
     "seeds": [
-      //亚洲无码原创
-      // "http://t66y.com/thread0806.php?fid=2",
-      // //亚洲有码原创
-      // "http://t66y.com/thread0806.php?fid=15",
-      // // 欧美原创
-      // "http://t66y.com/thread0806.php?fid=4",
-      //动漫原创区
-      // "http://t66y.com/thread0806.php?fid=5"
-      // // 国产原创区
-      // "http://t66y.com/thread0806.php?fid=25",
-      // //中字原创
-      // "http://t66y.com/thread0806.php?fid=26",
-      // // 转贴交流
-      // "http://t66y.com/thread0806.php?fid=27",
-      // // 新时代
       "http://t66y.com/thread0806.php?fid=8"
-      // //达盖尔
-      // "http://t66y.com/thread0806.php?fid=16",
-      // http下载
-      // "http://t66y.com/thread0806.php?fid=21"
     ]
   },
   "nameLenLimit": 60,
@@ -64,16 +45,16 @@ docker run -d -p 9200:9200  elasticsearch:5.6.16
 ### Downloaod image and save elastic search
 
 ```sh
-go get github.com/wuxiangzhou2010/imagespider
-cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
-go run github.com/wuxiangzhou2010/imagespider
+go get github.com/Tomilla/imagespider
+cd $GOPATH/src/github.com/Tomilla/imagespider
+go run github.com/Tomilla/imagespider
 ```
 
 ### Web search page
 
 ```sh
-cd $GOPATH/src/github.com/wuxiangzhou2010/imagespider
-go run github.com/wuxiangzhou2010/imagespider/frontend
+cd $GOPATH/src/github.com/Tomilla/imagespider
+go run github.com/Tomilla/imagespider/frontend
 ```
 
 ## arch

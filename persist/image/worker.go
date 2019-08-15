@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/wuxiangzhou2010/imagespider/net"
+	"github.com/Tomilla/imagespider/net"
 )
 
 type work struct {

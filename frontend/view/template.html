@@ -7,17 +7,14 @@
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-
-
     <link rel="stylesheet" href="css/style.css">
-
-
+    <title>测试</title>
 </head>
 
 <body>
 
 <div id="demo">
-    <div align="middle">
+    <div>
         <form method="get">
             <input type="text" maxlength="100" style="width: 500px" value="{{.Query}}" name="q">
             <button type="submit">搜索</button>
@@ -33,7 +30,7 @@
             <tbody>
             {{range .Items}}
             <tr>
-                <td><a href="{{.Url}}">{{.Name}}</a></td>
+                <td><a href="{{.Url}}">{{.Payload.Name}}</a></td>
                 {{/*{{with .Payload}}*/}}
                 {{/*<td>{{.Gender}}</td>*/}}
                 {{/*<td>{{.Age}}</td>*/}}

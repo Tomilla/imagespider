@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/model"
-	"github.com/wuxiangzhou2010/imagespider/util"
+	"gopkg.in/olivere/elastic.v5"
+
+	"github.com/Tomilla/imagespider/config"
+	"github.com/Tomilla/imagespider/model"
+	"github.com/Tomilla/imagespider/util"
 )
 
 type ela struct {
@@ -14,7 +16,7 @@ type ela struct {
 	topicChan chan model.Topic
 }
 
-func New(topicChan chan model.Topic) *ela {
+func NewConnection() *elastic.Client {
 	endpoint := config.C.GetEngineElasticUrl()
 	if endpoint == "" {
 		return nil
@@ -23,6 +25,11 @@ func New(topicChan chan model.Topic) *ela {
 	if err != nil {
 		panic(err)
 	}
+	return client
+}
+
+func New(topicChan chan model.Topic) *ela {
+	client := NewConnection()
 	return &ela{c: client, topicChan: topicChan}
 }
 

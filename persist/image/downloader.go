@@ -5,7 +5,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/Tomilla/imagespider/config"
 )
 
 type downloader struct {

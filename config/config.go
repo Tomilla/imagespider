@@ -7,17 +7,23 @@ import (
 	"log"
 	"os"
 	"path"
+	"runtime"
 	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/wuxiangzhou2010/jsonuncommenter"
 
-	"github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/Tomilla/imagespider/model"
+	"github.com/Tomilla/imagespider/util"
 )
 
-var C *Config
-var DB *sql.DB
+var (
+	C       *Config
+	DB      *sql.DB
+	BaseDir string
+)
+
+const NilParser = "NilParser"
 
 type Config struct {
 	sync.RWMutex
@@ -34,22 +40,26 @@ type Config struct {
 func NewConfig() *Config {
 	return LoadConfig()
 }
+
 func (c *Config) SetElasticChan(ch chan model.Topic) {
 	c.Lock()
 	defer c.Unlock()
 	c.elastic.topicChan = ch
 }
+
 func (c *Config) GetElasticChan() chan model.Topic {
 	c.Lock()
 	defer c.Unlock()
 	return c.elastic.topicChan
 }
+
 func (c *Config) GetNameLenLimit() int {
 	c.RLock()
 	defer c.RUnlock()
 
 	return c.MameLenLimit
 }
+
 func (c *Config) GetImageWorkerCount() int {
 	return c.Image.WorkerCount
 }
@@ -60,6 +70,7 @@ func (c *Config) GetStartPages() []string {
 
 	return c.Init.Seeds
 }
+
 func (c *Config) GetPageLimit() int {
 	c.RLock()
 	defer c.RUnlock()
@@ -80,12 +91,14 @@ func (c *Config) GetImageChan() chan model.Topic {
 
 	return c.Image.ImageChan
 }
+
 func (c *Config) SetImageChan(ch chan model.Topic) {
 	c.Lock()
 	defer c.Unlock()
 
 	c.Image.ImageChan = ch
 }
+
 func (c *Config) SetImageHungryChan(ch chan bool) {
 	c.Lock()
 	defer c.Unlock()
@@ -99,18 +112,21 @@ func (c *Config) GetImageHungryChan() chan bool {
 
 	return c.Image.HungryChan
 }
+
 func (c *Config) GetEngineWorkerCount() int {
 	c.Lock()
 	defer c.Unlock()
 
 	return c.Engine.WorkerCount
 }
+
 func (c *Config) GetEngineElasticUrl() string {
 	c.Lock()
 	defer c.Unlock()
 
 	return c.Engine.ElasticUrl
 }
+
 func (c *Config) GetStartPageNum() int {
 	c.Lock()
 	defer c.Unlock()
@@ -126,12 +142,19 @@ func (c *Config) GetEndPageNum() int {
 }
 
 func getConfigFileName() string {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
+	var (
+		wd  string
+		err error
+	)
+	if BaseDir != "" {
+		wd = BaseDir
+	} else {
+		wd, err = os.Getwd()
+		if err != nil {
+			panic(err)
+		}
 	}
 	return path.Join(wd, "config.json")
-
 }
 
 func (c *Config) GetProxyURL() string {
@@ -179,7 +202,7 @@ func LoadConfig() (c *Config) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	newReader := jsonuncommenter.RemoveComment(f)
+	newReader := util.RemoveComment(f)
 	defer f.Close()
 
 	jsonParser := json.NewDecoder(newReader)
@@ -195,6 +218,12 @@ func PrintConfig(cfg *Config) {
 
 func init() {
 	var err error
+	_, _curDir, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("No caller information")
+	}
+	BaseDir = path.Dir(path.Dir(_curDir))
+
 	C = NewConfig() // default config
 
 	DB, err = sql.Open(C.GetDbEngine(), C.GetDbDSN())

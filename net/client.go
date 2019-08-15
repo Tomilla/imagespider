@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/wuxiangzhou2010/imagespider/config"
+	"github.com/Tomilla/imagespider/config"
 )
 
 type Client struct{}

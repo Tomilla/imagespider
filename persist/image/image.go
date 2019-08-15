@@ -1,8 +1,8 @@
 package image
 
 import (
-	"github.com/wuxiangzhou2010/imagespider/config"
-	"github.com/wuxiangzhou2010/imagespider/model"
+	"github.com/Tomilla/imagespider/config"
+	"github.com/Tomilla/imagespider/model"
 )
 
 var count int32
