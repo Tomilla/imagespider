@@ -1,100 +1,100 @@
 package controller
 
 import (
-	"context"
-	"net/http"
-	"reflect"
-	"regexp"
-	"strconv"
-	"strings"
+    "context"
+    "net/http"
+    "reflect"
+    "regexp"
+    "strconv"
+    "strings"
 
-	elastic "github.com/elastic/go-elasticsearch/v7"
+    elastic "github.com/elastic/go-elasticsearch/v7"
 
-	"github.com/Tomilla/imagespider/frontend/model"
-	"github.com/Tomilla/imagespider/frontend/view"
-	mo "github.com/Tomilla/imagespider/model"
-	"github.com/Tomilla/imagespider/persist/elasticsearch"
+    "github.com/Tomilla/imagespider/frontend/model"
+    "github.com/Tomilla/imagespider/frontend/view"
+    mo "github.com/Tomilla/imagespider/model"
+    "github.com/Tomilla/imagespider/persist/elasticsearch"
 )
 
 type SearchResultHandler struct {
-	view   view.SearchResultView
-	client *elastic.Client
+    view   view.SearchResultView
+    client *elastic.Client
 }
 
 func CreateSearchResultHandler(
-	template string) SearchResultHandler {
-	client := elasticsearch.NewConnection()
+    template string) SearchResultHandler {
+    client := elasticsearch.NewConnection()
 
-	return SearchResultHandler{
-		view: view.CreateSearchResultView(
-			template),
-		client: client,
-	}
+    return SearchResultHandler{
+        view: view.CreateSearchResultView(
+            template),
+        client: client,
+    }
 }
 
 func (h SearchResultHandler) ServeHTTP(
-	w http.ResponseWriter, req *http.Request) {
-	q := strings.TrimSpace(req.FormValue("q"))
+    w http.ResponseWriter, req *http.Request) {
+    q := strings.TrimSpace(req.FormValue("q"))
 
-	from, err := strconv.Atoi(
-		req.FormValue("from"))
-	if err != nil {
-		from = 0
-	}
+    from, err := strconv.Atoi(
+        req.FormValue("from"))
+    if err != nil {
+        from = 0
+    }
 
-	page, err := h.getSearchResult(q, from)
-	if err != nil {
-		http.Error(w, err.Error(),
-			http.StatusBadRequest)
-		return
-	}
+    page, err := h.getSearchResult(q, from)
+    if err != nil {
+        http.Error(w, err.Error(),
+            http.StatusBadRequest)
+        return
+    }
 
-	err = h.view.Render(w, page)
-	if err != nil {
-		http.Error(w, err.Error(),
-			http.StatusBadRequest)
-		return
-	}
+    err = h.view.Render(w, page)
+    if err != nil {
+        http.Error(w, err.Error(),
+            http.StatusBadRequest)
+        return
+    }
 }
 
 const pageSize = 10
 
 func (h SearchResultHandler) getSearchResult(
-	q string, from int) (model.SearchResult, error) {
-	var result model.SearchResult
-	result.Query = q
+    q string, from int) (model.SearchResult, error) {
+    var result model.SearchResult
+    result.Query = q
 
-	resp, err := h.client.
-		Search("t66y").
-		Query(elastic.NewQueryStringQuery(
-			rewriteQueryString(q))).
-		From(from).
-		Do(context.Background())
+    resp, err := h.client.
+        Search("t66y").
+        Query(elastic.NewQueryStringQuery(
+            rewriteQueryString(q))).
+        From(from).
+        Do(context.Background())
 
-	if err != nil {
-		return result, err
-	}
+    if err != nil {
+        return result, err
+    }
 
-	result.Hits = resp.TotalHits()
-	result.Start = from
-	result.Items = resp.Each(
-		reflect.TypeOf(mo.Topic{}))
-	if result.Start == 0 {
-		result.PrevFrom = -1
-	} else {
-		result.PrevFrom =
-			(result.Start - 1) /
-				pageSize * pageSize
-	}
-	result.NextFrom =
-		result.Start + len(result.Items)
+    result.Hits = resp.TotalHits()
+    result.Start = from
+    result.Items = resp.Each(
+        reflect.TypeOf(mo.Topic{}))
+    if result.Start == 0 {
+        result.PrevFrom = -1
+    } else {
+        result.PrevFrom =
+            (result.Start - 1) /
+                pageSize * pageSize
+    }
+    result.NextFrom =
+        result.Start + len(result.Items)
 
-	return result, nil
+    return result, nil
 }
 
 // Rewrites query string. Replaces field names
 // like "Age" to "Payload.Age"
 func rewriteQueryString(q string) string {
-	re := regexp.MustCompile(`([A-Z][a-z]*):`)
-	return re.ReplaceAllString(q, "Payload.$1:")
+    re := regexp.MustCompile(`([A-Z][a-z]*):`)
+    return re.ReplaceAllString(q, "Payload.$1:")
 }

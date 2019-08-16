@@ -1,8 +1,8 @@
 package util
 
 import (
-	"log"
-	"time"
+    "log"
+    "time"
 )
 
 var DateLayout = "2006-01-02"
@@ -13,9 +13,9 @@ var TimeZone = "Asia/Shanghai"
 var TZ *time.Location
 
 func init() {
-	var err error
-	TZ, err = time.LoadLocation(TimeZone)
-	if err != nil {
-		log.Panic("cannot load time-zone")
-	}
+    var err error
+    TZ, err = time.LoadLocation(TimeZone)
+    if err != nil {
+        log.Panic("cannot load time-zone")
+    }
 }

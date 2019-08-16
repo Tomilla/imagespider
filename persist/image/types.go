@@ -1,12 +1,12 @@
 package image
 
 type Scheduler interface {
-	schedule()
+    schedule()
 }
 type Downloader interface {
-	Run()
+    Run()
 }
 
 type Worker interface {
-	work()
+    work()
 }

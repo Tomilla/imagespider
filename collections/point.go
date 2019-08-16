@@ -1,7 +1,7 @@
 package collections
 
 type (
-	Point struct {
-		X, Y int
-	}
+    Point struct {
+        X, Y int
+    }
 )

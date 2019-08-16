@@ -1,16 +1,16 @@
 package util
 
 import (
-	"io/ioutil"
-	"log"
-	"strings"
-	"testing"
+    "io/ioutil"
+    "log"
+    "strings"
+    "testing"
 )
 
 func TestRemoveComment(t *testing.T) {
 
-	cases := []struct{ in, out string }{{
-		`
+    cases := []struct{ in, out string }{{
+        `
 {
     "realms": [
         "https://www.baidu.com"// http下载
@@ -24,27 +24,27 @@ func TestRemoveComment(t *testing.T) {
     ]
 }`}}
 
-	for _, js := range cases {
-		reader := strings.NewReader(js.in)
-		newReader := RemoveComment(reader)
+    for _, js := range cases {
+        reader := strings.NewReader(js.in)
+        newReader := RemoveComment(reader)
 
-		bs, err := ioutil.ReadAll(newReader)
-		if err != nil {
-			log.Fatal(err)
-		}
+        bs, err := ioutil.ReadAll(newReader)
+        if err != nil {
+            log.Fatal(err)
+        }
 
-		out := string(bs)
+        out := string(bs)
 
-		if out != js.out {
-			t.Fatal("want:", js.out, "got: ", out)
-		}
-	}
+        if out != js.out {
+            t.Fatal("want:", js.out, "got: ", out)
+        }
+    }
 }
 
 // BenchmarkRemoveComment-6   	  200000	     10003 ns/op
 func BenchmarkRemoveComment(b *testing.B) {
-	js := struct{ in, out string }{
-		`
+    js := struct{ in, out string }{
+        `
 {
     "realms": [
         "https://www.baidu.com"// http下载
@@ -57,20 +57,20 @@ func BenchmarkRemoveComment(b *testing.B) {
         "https://www.baidu.com"
     ]
 }`}
-	for n := 0; n < b.N; n++ {
+    for n := 0; n < b.N; n++ {
 
-		reader := strings.NewReader(js.in)
-		newReader := RemoveComment(reader)
+        reader := strings.NewReader(js.in)
+        newReader := RemoveComment(reader)
 
-		bs, err := ioutil.ReadAll(newReader)
-		if err != nil {
-			log.Fatal(err)
-		}
+        bs, err := ioutil.ReadAll(newReader)
+        if err != nil {
+            log.Fatal(err)
+        }
 
-		out := string(bs)
-		if out != js.out {
-			b.Fatal("want:", js.out, "got: ", out)
-		}
+        out := string(bs)
+        if out != js.out {
+            b.Fatal("want:", js.out, "got: ", out)
+        }
 
-	}
+    }
 }
