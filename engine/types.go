@@ -1,5 +1,9 @@
 package engine
 
+import (
+	"time"
+)
+
 type Request struct {
 	Url        string
 	ParserFunc func([]byte, string) ParseResult
@@ -9,6 +13,15 @@ type Request struct {
 type ParseResult struct {
 	Requests []Request
 	Items    []interface{}
+}
+
+type Post struct {
+	Path        string
+	Title       string
+	Author      string
+	CreatedAt   time.Time
+	LastReplyAt time.Time
+	ReplyCount  int64
 }
 
 // func NewParseResult(items []interface{}) *ParseResult {

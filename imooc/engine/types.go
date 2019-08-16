@@ -54,9 +54,9 @@ func (f *FuncParser) Serialize() (
 	return f.name, nil
 }
 
-func NewFuncParser(p ParserFunc, name string) *FuncParser {
-	return &FuncParser{
-		parser: p,
-		name:   name,
-	}
-}
+// func NewFuncParser(p ParserFunc, name string) *FuncParser {
+//     return &FuncParser{
+//         parser: p,
+//         name:   name,
+//     }
+// }

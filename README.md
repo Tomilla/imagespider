@@ -30,7 +30,7 @@ docker run -d -p 9200:9200  elasticsearch:5.6.16
     "topicPerPage": 100,
     "startPageNum": 20,
     "endPageNum": 100,
-    "seeds": [
+    "realms": [
       "http://t66y.com/thread0806.php?fid=8"
     ]
   },

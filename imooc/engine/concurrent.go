@@ -20,7 +20,7 @@ type ReadyNotifier interface {
 	WorkerReady(chan Request)
 }
 
-func (e *ConcurrentEngine) Run(seeds ...Request) {
+func (e *ConcurrentEngine) Run(realms ...Request) {
 
 	// in := make(chan Request)
 	out := make(chan ParseResult)
@@ -31,7 +31,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
 	}
 
-	for _, r := range seeds {
+	for _, r := range realms {
 		if isDuplicate(r.Url) {
 			continue
 		}

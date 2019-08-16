@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	netUrl "net/url"
+	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,15 +20,18 @@ import (
 	"github.com/Tomilla/imagespider/util"
 )
 
-var topicListRe = regexp.MustCompile(`<h3><a href="(htm_data/[0-9]*/[0-9]*/[0-9]*\.html)"[^>]*>([^<]+)</a>`)
+var postUrlRe = regexp.MustCompile(`htm_data/\d+/\d+/\d+\.html`)
 
-func ParseTopicList(contents []byte, url string) engine.ParseResult {
+func ParsePostList(contents []byte, url string) engine.ParseResult {
 	fmt.Println(url)
 	fmt.Println(util.LeftPad2Len("", "*", 80))
 	// fmt.Println(string(contents))
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
 	util.CheckErr(err)
 	allTableRow := doc.Find("tr.tr3.t_one.tac")
+
+	replyLow, replyHigh := config.C.GetReplyRange() // limit the topic count
+	result := engine.ParseResult{}
 
 	allTableRow.Each(func(n int, sel *goquery.Selection) {
 		// baseHtml, err := sel.Html()
@@ -47,46 +53,55 @@ func ParseTopicList(contents []byte, url string) engine.ParseResult {
 		// fmt.Println(util.RightPad2Len("", "-", 80))
 		db := config.DB
 		if db != nil {
+			// do something
 		}
-		var (
-			ref         string
-			author      string
-			createdAt   time.Time
-			lastReplyAt time.Time
-			replyCount  int64
-		)
+		var post = engine.Post{}
 
 		for i, node := range allTd.Nodes {
 			doc := goquery.NewDocumentFromNode(node)
 			switch i {
 			case 0:
+				// fmt.Println(util.LeftPad2Len("", "*", 80))
 				break
 			case 1:
 				_ref, exist := doc.Find("h3>a").Attr("href")
 				if exist {
-					fmt.Println(ref)
-					ref = _ref
+					if postUrlRe.MatchString(_ref) {
+						post.Path = _ref
+					} else {
+						return // ignore invalid url
+					}
 				}
+				post.Title = doc.Find("h3>a").Text()
 				break
 			case 2:
-				author = doc.Find("a").Text()
+				post.Author = doc.Find("a").Text()
 				_createdAt := strings.Trim(doc.Find("div").Text(), util.WhiteSpace)
-				createdAt, err = time.Parse(util.DateLayout, _createdAt)
+				post.CreatedAt, err = time.Parse(util.DateLayout, _createdAt)
 				if err != nil {
-					createdAt, _ = time.Parse(util.DateLayout, util.DateDefault)
+					post.CreatedAt, _ = time.Parse(util.DateLayout, util.DateDefault)
 				}
-				fmt.Println(author, createdAt.In(util.TZ))
+				post.CreatedAt = post.CreatedAt.In(util.TZ)
 				break
 			case 3:
-				replyCount, err = strconv.ParseInt(strings.Trim(doc.Text(), util.WhiteSpace), 10, 64)
-				fmt.Println(replyCount)
+				_replyCount, err := strconv.ParseInt(strings.Trim(doc.Text(), util.WhiteSpace), 10, 64)
+				if err != nil {
+					continue
+				}
+				_replyCountInt := int(_replyCount)
+
+				if !(_replyCountInt >= replyLow && _replyCountInt < replyHigh) {
+					fmt.Printf("Ignore Post: %v %v\n", post.Path, _replyCount)
+					return
+				}
+				post.ReplyCount = _replyCount
 			case 4:
 				_lastReplyAt := strings.Trim(doc.Find("a").Text(), util.WhiteSpace)
-				lastReplyAt, err = time.Parse(util.DateTimeLayout, _lastReplyAt)
+				post.LastReplyAt, err = time.Parse(util.DateTimeLayout, _lastReplyAt)
 				if err != nil {
-					lastReplyAt, _ = time.Parse(util.DateTimeLayout, util.DateTimeDefault)
+					post.LastReplyAt, _ = time.Parse(util.DateTimeLayout, util.DateTimeDefault)
 				}
-				fmt.Println(lastReplyAt.In(util.TZ))
+				post.LastReplyAt = post.LastReplyAt.In(util.TZ)
 			default:
 				s, err := doc.Html()
 				if err != nil {
@@ -96,33 +111,31 @@ func ParseTopicList(contents []byte, url string) engine.ParseResult {
 			}
 		}
 
-		pTitle := sel.Find("h3>a").Text()
-
-		fmt.Println(pTitle)
+		// fmt.Println(pTitle)
+		fmt.Println(post)
+		result.Items = append(result.Items, "topic: "+string(post.Title))
+		result.Requests = append(result.Requests, engine.Request{
+			Url:        "http://t66y.com/" + string(post.Path),
+			Agent:      uarand.GetRandom(),
+			ParserFunc: ParsePost,
+			Name:       string(post.Title),
+		})
 	})
+	u, err := netUrl.Parse(url)
+	util.CheckErr(err)
+	logPath := config.C.GetLogPath()
+	if !util.CheckPathExists(logPath) {
+		err := os.MkdirAll(logPath, 0755)
+		util.CheckErr(err)
+	}
 
-	err = ioutil.WriteFile(config.C.GetLogPath(), contents, 0664)
+	err = ioutil.WriteFile(
+		path.Join(logPath, strings.Replace(u.Path, string(os.PathSeparator), "_", -1)),
+		contents,
+		0664)
 	util.CheckErr(err)
 
 	fmt.Println(util.RightPad2Len("", "*", 80))
-
-	matches := topicListRe.FindAllSubmatch(contents, -1)
-	limit := config.C.GetPageLimit() // limit the topic count
-	result := engine.ParseResult{}
-	for _, m := range matches {
-		result.Items = append(result.Items, "topic: "+string(m[2]))
-		result.Requests = append(result.Requests, engine.Request{
-			Url:        "http://t66y.com/" + string(m[1]),
-			Agent:      uarand.GetRandom(),
-			ParserFunc: ParseTopic,
-			Name:       string(m[2]),
-		})
-		limit--
-		if limit < 0 {
-			return result
-		}
-
-	}
 	return result
 
 }

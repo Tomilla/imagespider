@@ -12,7 +12,7 @@
     "topicPerPage": 100,
     "startPageNum": 0,
     "endPageNum": 5,
-    "seeds": [
+    "realms": [
       "http://t66y.com/thread0806.php?fid=16"
     ]
   },

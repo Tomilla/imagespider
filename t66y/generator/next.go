@@ -13,18 +13,19 @@ import (
 const nextString = "&search=&page="
 
 type Generator struct {
-	seeds         []string
+	realms        []string
 	startRequests []engine.Request
 	count         int
 	endPageNum    int
 	requestChan   chan engine.Request
 }
 
-func NewGenerator(seeds []string) chan engine.Request {
+func NewGenerator(realms []string) chan engine.Request {
+	start, stop := config.C.GetPageLimit()
 	g := &Generator{
-		seeds:      seeds,
-		count:      config.C.GetStartPageNum(),
-		endPageNum: config.C.GetEndPageNum(),
+		realms:     realms,
+		count:      start,
+		endPageNum: stop,
 	}
 	g.requestChan = make(chan engine.Request)
 	go g.Generate()
@@ -36,7 +37,7 @@ func (g *Generator) SetRequestChan(requestChan chan engine.Request) {
 
 }
 func (g *Generator) Generate() {
-	g.GenerateStartRequest(g.seeds)
+	g.GenerateStartRequest(g.realms)
 	for {
 		g.GenerateNextRequest()
 		if g.count > g.endPageNum {
@@ -47,12 +48,12 @@ func (g *Generator) Generate() {
 
 }
 
-func (g *Generator) GenerateStartRequest(seeds []string) {
+func (g *Generator) GenerateStartRequest(realms []string) {
 
-	for _, url := range seeds {
+	for _, url := range realms {
 		g.startRequests = append(g.startRequests, engine.Request{
 			Url:        url,
-			ParserFunc: parser.ParseTopicList,
+			ParserFunc: parser.ParsePostList,
 			Agent:      uarand.GetRandom(),
 		})
 	}

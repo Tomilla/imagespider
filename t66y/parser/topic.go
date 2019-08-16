@@ -18,7 +18,7 @@ var titleRe = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+
 
 // var ImageCh = make(chan []*model.Topic, 20)
 
-func ParseTopic(contents []byte, url string) engine.ParseResult {
+func ParsePost(contents []byte, url string) engine.ParseResult {
 
 	imageMatches := imageRe.FindAllSubmatch(contents, -1)
 	if imageMatches == nil {

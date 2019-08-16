@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path"
 	"runtime"
@@ -34,7 +35,16 @@ type Config struct {
 	Net          Net         `json:"net"`
 	MameLenLimit int         `json:"nameLenLimit"`
 	Engine       Engine      `json:"engine"`
-	elastic      Elastic
+	Elastic      Elastic
+}
+
+type InRange struct {
+	min int
+	max int
+}
+
+func (r InRange) GetRange() (int, int) {
+	return r.min, r.max
 }
 
 func NewConfig() *Config {
@@ -44,13 +54,13 @@ func NewConfig() *Config {
 func (c *Config) SetElasticChan(ch chan model.Topic) {
 	c.Lock()
 	defer c.Unlock()
-	c.elastic.topicChan = ch
+	c.Elastic.topicChan = ch
 }
 
 func (c *Config) GetElasticChan() chan model.Topic {
 	c.Lock()
 	defer c.Unlock()
-	return c.elastic.topicChan
+	return c.Elastic.topicChan
 }
 
 func (c *Config) GetNameLenLimit() int {
@@ -58,6 +68,24 @@ func (c *Config) GetNameLenLimit() int {
 	defer c.RUnlock()
 
 	return c.MameLenLimit
+}
+
+func (c *Config) GetSleepRange() (int, int) {
+	r := c.Init.SleepRange
+	return r[0], r[1]
+}
+
+func (c *Config) GetReplyRange() (int, int) {
+	r := c.Init.ReplyRange
+	return r[0], r[1]
+}
+
+func (c *Config) GetPageLimit() (int, int) {
+	c.RLock()
+	defer c.RUnlock()
+
+	r := c.Init.PageRange
+	return r[0], r[1]
 }
 
 func (c *Config) GetImageWorkerCount() int {
@@ -68,14 +96,7 @@ func (c *Config) GetStartPages() []string {
 	c.RLock()
 	defer c.RUnlock()
 
-	return c.Init.Seeds
-}
-
-func (c *Config) GetPageLimit() int {
-	c.RLock()
-	defer c.RUnlock()
-
-	return c.Init.TopicPerPage
+	return c.Init.Realms
 }
 
 func (c *Config) GetImageConfig() *ImageConfig {
@@ -125,20 +146,6 @@ func (c *Config) GetEngineElasticUrl() string {
 	defer c.Unlock()
 
 	return c.Engine.ElasticUrl
-}
-
-func (c *Config) GetStartPageNum() int {
-	c.Lock()
-	defer c.Unlock()
-
-	return c.Init.StartPageNum
-}
-
-func (c *Config) GetEndPageNum() int {
-	c.Lock()
-	defer c.Unlock()
-
-	return c.Init.EndPageNum
 }
 
 func getConfigFileName() string {
@@ -230,6 +237,8 @@ func PrintConfig(cfg *Config) {
 
 func init() {
 	var err error
+	rand.Seed(time.Now().UnixNano())
+
 	_, _curDir, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("No caller information")

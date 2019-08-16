@@ -6,10 +6,10 @@ import (
 
 type SimpleEngine struct{}
 
-func (e SimpleEngine) Run(seeds ...Request) {
+func (e SimpleEngine) Run(realms ...Request) {
 	var requests []Request
 
-	for _, value := range seeds {
+	for _, value := range realms {
 		requests = append(requests, value)
 	}
 

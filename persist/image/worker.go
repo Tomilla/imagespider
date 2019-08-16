@@ -8,7 +8,9 @@ import (
 	"os"
 	"sync/atomic"
 
+	"github.com/Tomilla/imagespider/config"
 	"github.com/Tomilla/imagespider/net"
+	"github.com/Tomilla/imagespider/util"
 )
 
 type work struct {
@@ -46,6 +48,7 @@ func (w *worker) work() {
 		}
 
 		w.Download(task)
+		util.SleepRandomDuration(config.C.GetSleepRange())
 		w.s.Ready(workChan)
 
 	}
@@ -57,7 +60,7 @@ func (w *worker) Download(task work) {
 	err := w.downloadWithPath(task.url, task.fileName)
 	if err != nil {
 		log.Println("####### Error download ", err, task.url)
-		os.Remove(task.fileName) // 下载失败 删除文件
+		util.WarnErr(os.Remove(task.fileName)) // 下载失败 删除文件
 		return
 	}
 
@@ -77,23 +80,29 @@ func (w *worker) downloadWithPath(link, fileName string) error {
 
 	client := net.NewClient(false)
 	req, err := http.NewRequest("GET", link, nil)
+	if err != nil {
+		return nil
+	}
 	// req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 t66y_com")
 	req.Header.Set("User-Agent", net.GetRandomUserAgent())
 	resp, err := client.Do(req)
 
-	// @@@@@@@@@@@@@@@@@
-
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		util.WarnErr(resp.Body.Close())
+	}()
 	buf := bufio.NewReader(resp.Body)
-	out, err := os.Create(fileName)
+	newFile, err := os.Create(fileName)
 	if err != nil {
 		return err
 	}
 
-	io.Copy(out, buf)
-	defer out.Close()
+	_, err = io.Copy(newFile, buf)
+	util.WarnErr(err)
+	defer func() {
+		util.WarnErr(newFile.Close())
+	}()
 	return nil
 }

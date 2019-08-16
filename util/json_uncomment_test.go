@@ -12,14 +12,14 @@ func TestRemoveComment(t *testing.T) {
 	cases := []struct{ in, out string }{{
 		`
 {
-    "seeds": [
+    "realms": [
         "https://www.baidu.com"// http下载
 //
       // "https://v.qq.com"
     ]
 }`, `
 {
-    "seeds": [
+    "realms": [
         "https://www.baidu.com"
     ]
 }`}}
@@ -46,14 +46,14 @@ func BenchmarkRemoveComment(b *testing.B) {
 	js := struct{ in, out string }{
 		`
 {
-    "seeds": [
+    "realms": [
         "https://www.baidu.com"// http下载
 //
       // "https://v.qq.com"
     ]
 }`, `
 {
-    "seeds": [
+    "realms": [
         "https://www.baidu.com"
     ]
 }`}
