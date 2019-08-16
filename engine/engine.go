@@ -26,7 +26,7 @@ func (e *ConcurrentEngine) Shutdown() {
 	time.Sleep(10)
 
 }
-func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
+func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {
 
 	e.s = s
 	e.ElasticChan = config.C.GetElasticChan() // new ElasticChan client
@@ -46,7 +46,7 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 			case <-hungry: // 请求下一页
 				r, more := <-requestChan
 				if more {
-					fmt.Println("Got next page, ", r.Url)
+					fmt.Println("Got next page, ", r.GetURL())
 					s.SubmitRequest(r)
 				} else {
 					fmt.Println("All initial pages are sent")

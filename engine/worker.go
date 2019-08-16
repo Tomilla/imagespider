@@ -1,39 +1,52 @@
 package engine
 
 import (
-    "log"
+	"log"
 
-    "github.com/Tomilla/imagespider/fetcher"
+	"github.com/Tomilla/imagespider/fetcher"
 )
 
 type Worker struct {
 }
 
 func newWorker() *Worker {
-    return &Worker{}
+	return &Worker{}
 }
 
 // fetch as request and return the parsed result
 
 func (w *Worker) work(s Scheduler, out chan ParseResult) {
-    workChan := make(chan Request)
-    s.SubmitWorker(workChan)
+	const (
+		logPrefix = "[engine worker] "
+	)
+	workChan := make(chan BaseParser)
+	s.SubmitWorker(workChan)
 
-    for {
-        r := <-workChan
+	for {
+		r := <-workChan
+		url, post := r.GetURL(), r.GetPost()
+		isList := post == nil
 
-        log.Printf("[engine worker] Fetching %s, url: %s \n", r.Name, r.Url)
-        body, err := fetcher.Fetch(r.Url)
-        if err != nil {
-            // panic(err)
-            log.Println("[engine worker] Fetching error:", err, r.Name, r.Url)
-            s.SubmitWorker(workChan)
-            continue
-        }
+		if isList {
+			log.Printf(logPrefix+"Fetching Post List, url: %s \n", url)
+		} else {
+			log.Printf(logPrefix+"Fetching Post %s, url: %s \n", post.Title, url)
+		}
 
-        ParseResult := r.ParserFunc(body, r.Url)
-        out <- ParseResult
-        s.SubmitWorker(workChan)
-    }
+		body, err := fetcher.Fetch(url)
+		if err != nil {
+			if isList {
+				log.Printf(logPrefix+"Fetching Post List error: %v %v\n", err, url)
+			} else {
+				log.Printf(logPrefix+"Fetching Post List error: %v %v %v\n", err, post, url)
+			}
+			s.SubmitWorker(workChan)
+			continue
+		}
+
+		ParseResult := r.Parser(body, url)
+		out <- ParseResult
+		s.SubmitWorker(workChan)
+	}
 
 }
