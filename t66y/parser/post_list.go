@@ -18,6 +18,7 @@ import (
     "github.com/Tomilla/imagespider/collections/set"
     "github.com/Tomilla/imagespider/config"
     "github.com/Tomilla/imagespider/engine"
+    "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/util"
 )
 
@@ -136,7 +137,7 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
     u, err := netUrl.Parse(url)
     util.CheckErr(err)
     logPath := config.C.GetLogPath()
-    if !util.CheckPathExists(logPath) {
+    if !glog.CheckPathExists(logPath) {
         err := os.MkdirAll(logPath, util.DefaultFilePerm)
         util.CheckErr(err)
     }

@@ -49,13 +49,13 @@ func Fetch(link string) ([]byte, error) {
     })()
 
     bodyReader := bufio.NewReader(res.Body)
-    e := determinEncoding(bodyReader)
+    e := determineEncoding(bodyReader)
     utf8Reader := transform.NewReader(bodyReader, e.NewDecoder())
     return ioutil.ReadAll(utf8Reader)
 
 }
 
-func determinEncoding(r *bufio.Reader) encoding.Encoding {
+func determineEncoding(r *bufio.Reader) encoding.Encoding {
 
     bytes, err := r.Peek(1024)
     if err != nil {

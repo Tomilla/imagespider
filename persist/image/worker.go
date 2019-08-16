@@ -9,6 +9,7 @@ import (
     "sync/atomic"
 
     "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/net"
     "github.com/Tomilla/imagespider/util"
 )
@@ -72,7 +73,7 @@ func (w *worker) Download(task work) {
 
 func (w *worker) downloadWithPath(link, fileName string) error {
 
-    if util.CheckPathExists(fileName) {
+    if glog.CheckPathExists(fileName) {
         return nil
     }
     // resp, err := http.Get(link)

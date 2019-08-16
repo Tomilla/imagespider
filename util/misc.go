@@ -3,7 +3,6 @@ package util
 import (
     "fmt"
     "math/rand"
-    "os"
     "time"
 )
 
@@ -22,13 +21,5 @@ func SleepRandomDuration(min int, max int) {
 func WarnErr(e error) {
     if e != nil {
         fmt.Printf("Warn: %v\n", e)
-    }
-}
-
-func CheckPathExists(path string) bool {
-    if _, err := os.Stat(path); os.IsNotExist(err) {
-        return false
-    } else {
-        return true
     }
 }

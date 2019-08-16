@@ -14,6 +14,7 @@ import (
 
     _ "github.com/go-sql-driver/mysql"
 
+    "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/model"
     "github.com/Tomilla/imagespider/util"
 )
@@ -165,11 +166,11 @@ func getConfigFileName() string {
 
     var finalPath string
     finalPath = path.Join(wd, "local_config.json")
-    if util.CheckPathExists(finalPath) {
+    if glog.CheckPathExists(finalPath) {
         return finalPath
     } else {
         finalPath = path.Join(wd, "config.json")
-        if !util.CheckPathExists(finalPath) {
+        if !glog.CheckPathExists(finalPath) {
             log.Panicln("cannot find config file")
         }
         return finalPath

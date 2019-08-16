@@ -10,9 +10,9 @@ import (
 )
 
 type ConcurrentEngine struct {
-	ImageChan chan model.Topic
-	s         Scheduler
-	elastic   chan model.Topic
+	ImageChan   chan model.Topic
+	s           Scheduler
+	ElasticChan chan model.Topic
 }
 
 func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
@@ -22,14 +22,14 @@ func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 func (e *ConcurrentEngine) Shutdown() {
 	close(e.ImageChan) // 不继续发送图片下载
 	e.s.Shutdown()
-	// e.elastic.Stop() // stop elasticSearch client
+	// e.ElasticChan.Stop() // stop elasticSearch client
 	time.Sleep(10)
 
 }
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 
 	e.s = s
-	e.elastic = config.C.GetElasticChan() // new elastic client
+	e.ElasticChan = config.C.GetElasticChan() // new ElasticChan client
 
 	out := make(chan ParseResult)
 	hungry := make(chan bool)
@@ -52,6 +52,9 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan Request) {
 					fmt.Println("All initial pages are sent")
 					return
 				}
+			case <-e.ElasticChan:
+				r := <-e.ElasticChan
+				fmt.Println("ES:", r)
 			}
 		}
 	}()
@@ -78,8 +81,8 @@ func (e *ConcurrentEngine) dealItems(items []interface{}) {
 			if imageChan := e.ImageChan; imageChan != nil {
 				imageChan <- item.(model.Topic) // save to image
 			}
-			if e.elastic != nil {
-				e.elastic <- item.(model.Topic) // save to elasticSearch
+			if e.ElasticChan != nil {
+				e.ElasticChan <- item.(model.Topic) // save to elasticSearch
 			}
 
 		default:
