@@ -16,11 +16,11 @@ type ParseResult struct {
 }
 
 type Post struct {
-	Path        string
-	Title       string
-	Author      string
 	CreatedAt   time.Time
 	LastReplyAt time.Time
+	Author      string
+	Path        string
+	Title       string
 	ReplyCount  int64
 }
 

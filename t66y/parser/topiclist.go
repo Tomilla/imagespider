@@ -15,12 +15,15 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/corpix/uarand"
 
+	"github.com/Tomilla/imagespider/collections/set"
 	"github.com/Tomilla/imagespider/config"
 	"github.com/Tomilla/imagespider/engine"
 	"github.com/Tomilla/imagespider/util"
 )
 
 var postUrlRe = regexp.MustCompile(`htm_data/\d+/\d+/\d+\.html`)
+var ignoredPostColor = set.New("red", "blue", "orange")
+var mustIncludePostCOlor = set.New("green")
 
 func ParsePostList(contents []byte, url string) engine.ParseResult {
 	fmt.Println(url)
@@ -33,6 +36,7 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
 	replyLow, replyHigh := config.C.GetReplyRange() // limit the topic count
 	result := engine.ParseResult{}
 
+	var postColor string
 	allTableRow.Each(func(n int, sel *goquery.Selection) {
 		// baseHtml, err := sel.Html()
 
@@ -64,7 +68,9 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
 				// fmt.Println(util.LeftPad2Len("", "*", 80))
 				break
 			case 1:
-				_ref, exist := doc.Find("h3>a").Attr("href")
+				var exist bool
+				aTag := doc.Find("h3>a")
+				_ref, exist := aTag.Attr("href")
 				if exist {
 					if postUrlRe.MatchString(_ref) {
 						post.Path = _ref
@@ -72,7 +78,13 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
 						return // ignore invalid url
 					}
 				}
-				post.Title = doc.Find("h3>a").Text()
+
+				post.Title = aTag.Text()
+				postColor, exist = aTag.Find("font").Attr("color")
+				if exist && ignoredPostColor.Has(postColor) {
+					fmt.Printf("Ignore Admin Post: %v %v\n", post.Title, postColor)
+					return
+				}
 				break
 			case 2:
 				post.Author = doc.Find("a").Text()
@@ -90,7 +102,7 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
 				}
 				_replyCountInt := int(_replyCount)
 
-				if !(_replyCountInt >= replyLow && _replyCountInt < replyHigh) {
+				if !mustIncludePostCOlor.Has(postColor) && !(_replyCountInt >= replyLow && _replyCountInt < replyHigh) {
 					fmt.Printf("Ignore Post: %v %v\n", post.Path, _replyCount)
 					return
 				}
