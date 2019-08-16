@@ -5,12 +5,18 @@ import (
     "time"
 )
 
-var DateLayout = "2006-01-02"
-var DateDefault = "3000-01-01"
-var DateTimeLayout = "2006-01-02 15:04"
-var DateTimeDefault = "3000-01-01 01:01:00"
-var TimeZone = "Asia/Shanghai"
-var TZ *time.Location
+const (
+    DateLayout      = "2006-01-02"
+    DateDefault     = "3000-01-01"
+    DateTimeLayout  = "2006-01-02 15:04"
+    DateTimeDefault = "3000-01-01 01:01:00"
+    TimeZone        = "Asia/Shanghai"
+    DefaultFilePerm = 0755
+)
+
+var (
+    TZ *time.Location
+)
 
 func init() {
     var err error

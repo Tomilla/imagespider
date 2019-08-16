@@ -72,7 +72,7 @@ func (w *worker) Download(task work) {
 
 func (w *worker) downloadWithPath(link, fileName string) error {
 
-    if pathExist(fileName) {
+    if util.CheckPathExists(fileName) {
         return nil
     }
     // resp, err := http.Get(link)

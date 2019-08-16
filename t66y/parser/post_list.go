@@ -137,7 +137,7 @@ func ParsePostList(contents []byte, url string) engine.ParseResult {
     util.CheckErr(err)
     logPath := config.C.GetLogPath()
     if !util.CheckPathExists(logPath) {
-        err := os.MkdirAll(logPath, 0755)
+        err := os.MkdirAll(logPath, util.DefaultFilePerm)
         util.CheckErr(err)
     }
 

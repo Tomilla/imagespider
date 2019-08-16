@@ -6,6 +6,7 @@ import (
     "strconv"
 
     "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/util"
 )
 
 type downloader struct {
@@ -14,12 +15,11 @@ type downloader struct {
 }
 
 func NewDownloader(imageConfig *config.ImageConfig) *downloader {
-
     return &downloader{ImageConfig: *imageConfig}
 }
-func (d *downloader) Run() {
 
-    if err := os.MkdirAll(d.Path, 0755); err != nil {
+func (d *downloader) Run() {
+    if err := os.MkdirAll(d.Path, util.DefaultFilePerm); err != nil {
         panic(err)
     }
     readyChan := make(chan chan work)
@@ -35,12 +35,12 @@ func (d *downloader) Run() {
         baseFolder := path.Join(d.Path, topic.Name)
         // fmt.Println("BaseFolder", baseFolder)
         if !d.UniqFolder { // 如果不是统一文件夹， 则需要分别创建文件夹
-            if err := os.MkdirAll(baseFolder, 0755); err != nil {
+            if err := os.MkdirAll(baseFolder, util.DefaultFilePerm); err != nil {
                 panic(err)
             }
         }
 
-        for i, url := range topic.Images { // 传给worker下载
+        for i, url := range topic.Images { // pass to worker
             fileName := d.getFileName(baseFolder, topic.Name, i)
             w := newWork(url, fileName)
             workChan <- w
@@ -54,19 +54,11 @@ func (d *downloader) CreateWorker(s *scheduler) {
     ws.Start()
 }
 
-// golang新版本的应该
-func pathExist(_path string) bool {
-    _, err := os.Stat(_path)
-    if err != nil && os.IsNotExist(err) {
-        return false
-    }
-    return true
-}
-
 func (d *downloader) getFileName(baseFolder, name string, index int) string {
-    if d.UniqFolder { // 放同一个文件夹， 只需要提供文件名就行
+    if d.UniqFolder { // only provide filename is fine for unique folder
         return baseFolder + strconv.Itoa(index) + ".jpg"
     }
-    return path.Join(baseFolder, name+strconv.Itoa(index)+".jpg") // 放
+    // otherwise, we need join the post name with filename
+    return path.Join(baseFolder, name+strconv.Itoa(index)+".jpg")
 
 }
