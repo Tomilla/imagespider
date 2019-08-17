@@ -1,5 +1,6 @@
 package config
 
 type Log struct {
-    Path string `json:"path"`
+    ShowDownloadProgress bool   `json:"showDownloadProgress"`
+    Path                 string `json:"path"`
 }

@@ -206,6 +206,10 @@ func (c *Config) GetLogPath() string {
     return c.Log.Path
 }
 
+func (c *Config) GetShowDownloadProgress() bool {
+    return c.Log.ShowDownloadProgress
+}
+
 func (c *Config) GetDbEngine() string {
     return c.Db.Engine
 }

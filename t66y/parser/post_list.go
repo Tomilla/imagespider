@@ -181,11 +181,15 @@ func (p PostListRequest) Archiver(contents []byte, url string) bool {
 
     uBase := path.Base(u.Path)
     uExt := path.Ext(u.Path)
-    if ValidWebPageExt.Has(uExt) {
+
+    if len(uExt) > 0 {
+        uBase = strings.ReplaceAll(uBase, uExt, "")
+    }
+    if !ValidWebPageExt.Has(uExt) {
         uExt = DefaultWebPageExt
     }
 
-    finalPath := uBase + "_" + u.RawQuery + uExt
+    finalPath := strings.ToLower(uBase + "_" + u.RawQuery + uExt)
     err = ioutil.WriteFile(
         path.Join(logPath, strings.Trim(postPathRe.ReplaceAllString(finalPath, "_"), "_")),
         contents,

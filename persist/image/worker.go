@@ -6,6 +6,7 @@ import (
     "log"
     "net/http"
     "os"
+    "path"
     "sync/atomic"
 
     "github.com/Tomilla/imagespider/config"
@@ -100,7 +101,9 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     util.WarnErr(err)
     defer func() {
         util.WarnErr(newFile.Close())
-        config.L.Infof("Image Downloaded: %v", link)
+        if config.C.GetShowDownloadProgress() {
+            config.L.Infof("Image Downloaded: %v\n%v\n", path.Base(fileName), link)
+        }
     }()
     return nil
 }
