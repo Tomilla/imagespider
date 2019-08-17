@@ -7,14 +7,25 @@ import (
 	"strings"
 
 	"github.com/Tomilla/imagespider/config"
-
 	"github.com/Tomilla/imagespider/engine"
 	"github.com/Tomilla/imagespider/model"
 )
 
 var (
-	imageRe = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?://[^'"]+(jpg|png|jpeg|gif))['"]`)
-	titleRe = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+\s*)</title>`)
+	// template
+	tmpChineseEnglish   = `[%v\p{Han}\p{Latin}0-9_-]`
+	chineseEnglish      = fmt.Sprintf(tmpChineseEnglish, ``)
+	nonChineseEnglish   = fmt.Sprintf(tmpChineseEnglish, `^`)
+	imageRe             = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?://[^'"]+(jpg|png|jpeg|gif))['"]`)
+	titleRe             = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+\s*)</title>`)
+	quoteRe             = regexp.MustCompile(`(?:['"‘“])(.*?)(?:['"’”])`)
+	punctuationRe       = regexp.MustCompile(`(?:[(（{｛])(.*?)(?:\[\)）}｝])`)
+	halfToFullRe        = regexp.MustCompile(`(?:[［「【『〖])(.*?)(?:[］」】』〗])`)
+	tagBracketRe        = regexp.MustCompile(`\[.{0,6}]`)
+	nonTagBracketRe     = regexp.MustCompile(`\[(.*?)]`)
+	whiteSpaceRe        = regexp.MustCompile(`\s+`)
+	whiteSpaceInsideRe  = regexp.MustCompile(fmt.Sprintf(`(%v)\s+(%v)`, chineseEnglish, chineseEnglish))
+	nonChineseEnglishRe = regexp.MustCompile(fmt.Sprintf(`%v+`, nonChineseEnglish))
 )
 
 type PostRequest struct {
@@ -54,7 +65,7 @@ func (p PostRequest) Parser(contents []byte, url string) engine.ParseResult {
 	t.CountReply = p.Post.CountReply
 
 	println("-->", name)
-	t.Name = fmt.Sprintf("[%v][%v]%v", t.CountReply, t.CountImage, normalizeName(name))
+	t.Name = fmt.Sprintf("[%03v][%03v]%v", t.CountReply, t.CountImage, NormalizeName(name))
 	println("==>", t.Name)
 	t.Url = url
 
@@ -69,22 +80,6 @@ func (p PostRequest) Parser(contents []byte, url string) engine.ParseResult {
 
 	return engine.ParseResult{Items: []interface{}{t}}
 
-}
-
-func normalizeName(s string) string {
-	// s = strings.Trim(s, "[]")
-	// fmt.Println("before -- > ", s)
-	limit := config.C.GetNameLenLimit()
-	if strings.Contains(s, `/`) { // 去除名字中的反斜杠
-		s = strings.Replace(s, `/`, ``, -1)
-	}
-
-	characters := []rune(s)
-
-	if len(characters) > limit {
-		characters = characters[:limit]
-	}
-	return string(characters)
 }
 
 // delete duplicates
@@ -103,4 +98,34 @@ func isDup(s string) bool {
 		break
 	}
 	return result
+}
+
+func NormalizeName(s string) string {
+	// s = strings.Trim(s, "[]")
+	// fmt.Println("before -- > ", s)
+	limit := config.C.GetNameLenLimit()
+	// remove quote
+	s = quoteRe.ReplaceAllString(s, `$1`)
+	// remove punctuation
+	s = punctuationRe.ReplaceAllString(s, `$1`)
+	// replace full characters to half characters
+	s = halfToFullRe.ReplaceAllString(s, `[$1]`)
+	if strings.Contains(s, `/`) { // 去除名字中的反斜杠
+		s = strings.Replace(s, `/`, ``, -1)
+	}
+	// tags := tagBracketRe.FindAllString(s, -1)
+	// fmt.Printf("tags: %v\n", tags)
+	s = tagBracketRe.ReplaceAllString(s, "")
+	s = nonTagBracketRe.ReplaceAllString(s, "$1")
+	// replace non Chinese or non English world
+	s = nonChineseEnglishRe.ReplaceAllString(s, " ")
+	s = whiteSpaceInsideRe.ReplaceAllString(s, "$1 _ $2")
+	s = whiteSpaceRe.ReplaceAllString(s, "")
+
+	characters := []rune(s)
+
+	if len(characters) > limit {
+		characters = characters[:limit]
+	}
+	return string(characters)
 }

@@ -1,32 +1,41 @@
 {
   "image": {
-    "path": "/home/carey/Downloads/tmp/",
-    "workerCount": 100,
-    "isUniqFolder": true
+    "path": "/tmp/go_image_spider",
+    "workerCount": 8,
+    "isUniqFolder": false
   },
   "engine": {
-    "workerCount": 5,
+    "workerCount": 8,
     "elasticUrl": "http://localhost:9200"
   },
   "init": {
-    "topicPerPage": 100,
-    "startPageNum": 0,
-    "endPageNum": 5,
+    "replyRange": [
+      50,
+      9999
+    ],
+    "pageRange": [
+      1,
+      2
+    ],
+    "sleepRange": [
+      300,
+      2000
+    ],
     "realms": [
       "http://t66y.com/thread0806.php?fid=16"
     ]
   },
   "nameLenLimit": 60,
   "net": {
-    "timeOut": 30,
-    "proxyUrl": "socks5://localhost:1091"
+    "timeOut": 180,
+    "proxyUrl": "socks5://localhost:1093"
   },
   "log": {
-    "path": "/tmp/image_spider.txt"
+    "path": "/tmp/go_image_spider"
   },
   "db": {
     "engine": "mysql",
-    "DSN": "root:VwX?U9s%aGf3R!o.@tcp(localhost:3306)/go_image_spider?charset=utf8mb4,utf8",
+    "DSN": "userName:passWord@protocol(address:port)/dbName?charset=utf8mb4,utf8",
     "maxOpenConns": 256,
     "maxIdleConns": 100,
     "connMaxLifetime": 600

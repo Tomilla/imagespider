@@ -14,7 +14,7 @@ func CheckErr(e error) {
 
 func SleepRandomDuration(min int, max int) {
 	t := rand.Intn(max-min+1) + min
-	fmt.Printf("Seleep: %v\n", t)
+	// fmt.Printf("Seleep: %v\n", t)
 	time.Sleep(time.Duration(t))
 }
 
