@@ -13,6 +13,7 @@ var (
     countImageRe     = regexp.MustCompile(`[\[［](\d+).?[］\]]`)
     ignoredPostColor = set.New("red", "blue", "orange")
     includePostColor = set.New("green")
+    ValidWebPageExt  = set.New("html", "htm")
 )
 
 // from post
@@ -23,8 +24,9 @@ var (
     nonChineseEnglish = fmt.Sprintf(tmpChineseEnglish, `^`)
     // imageRe           = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?://[^'"]+(jpg|png|jpeg|gif))['"]`)
     // titleRe             = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+\s*)</title>`)
-    postImageRe         = regexp.MustCompile(`(?:http|https):[^\s]*?(?:jpg|jpeg|png|gif)`)
-    viidiiImageRe       = regexp.MustCompile(`(?:http|https)://[^\s]+viidii[^\s]+(?:jpg|jpeg|png|gif)`)
+    postPathRe          = regexp.MustCompile(`(?i)_+|(?:html?_data|[&=?]|[/\\])`)
+    postImageRe         = regexp.MustCompile(`(?i)(?:http|https):[^\s]*?(?:jpg|jpeg|png|gif)`)
+    viidiiImageRe       = regexp.MustCompile(`(?i)(?:http|https)://[^\s]+viidii[^\s]+(?:jpg|jpeg|png|gif)`)
     quoteRe             = regexp.MustCompile(`(?:['"‘“])(.*?)(?:['"’”])`)
     punctuationRe       = regexp.MustCompile(`(?:[(（{｛])(.*?)(?:\[\)）}｝])`)
     halfToFullRe        = regexp.MustCompile(`(?:[［「【『〖])(.*?)(?:[］」】』〗])`)
@@ -33,9 +35,10 @@ var (
     whiteSpaceRe        = regexp.MustCompile(`\s+`)
     whiteSpaceInsideRe  = regexp.MustCompile(fmt.Sprintf(`(%v)\s+(%v)`, chineseEnglish, chineseEnglish))
     nonChineseEnglishRe = regexp.MustCompile(fmt.Sprintf(`%v+`, nonChineseEnglish))
-    PathSeparatorRe     = regexp.MustCompile(`[\\/]`)
+    // PathSeparatorRe     = regexp.MustCompile(`[\\/]`)
 )
 
 const (
-    HOSTNAME = "http://t66y.com/"
+    HOSTNAME          = "http://t66y.com/"
+    DefaultWebPageExt = ".html"
 )

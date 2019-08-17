@@ -76,15 +76,11 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     if glog.CheckPathExists(fileName) {
         return nil
     }
-    // resp, err := http.Get(link)
-    // @@@@@@@@@@@@@@@@@
-
     client := net.NewClient(false)
     req, err := http.NewRequest("GET", link, nil)
     if err != nil {
         return nil
     }
-    // req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 t66y_com")
     req.Header.Set("User-Agent", net.GetRandomUserAgent())
     resp, err := client.Do(req)
 
@@ -104,6 +100,7 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     util.WarnErr(err)
     defer func() {
         util.WarnErr(newFile.Close())
+        config.L.Infof("Image Downloaded: %v", link)
     }()
     return nil
 }

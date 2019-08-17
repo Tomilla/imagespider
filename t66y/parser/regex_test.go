@@ -1,6 +1,7 @@
 package parser
 
 import (
+    "strings"
     "testing"
 
     "github.com/stretchr/testify/assert"
@@ -33,6 +34,24 @@ func TestNormalizeName(t *testing.T) {
         // t.Log(src)
         // t.Log(dest)
         // t.Log(replaced)
+        assert.Equal(t, dest, replaced)
+    }
+}
+
+func TestCleanPathRe(t *testing.T) {
+    var (
+        expected = [][]string{
+            {"/htm_data/1908/16/3604380.html", "1908_16_3604380.html"},
+            {"/htm_data/1908/16/3597335.html", "1908_16_3597335.html"},
+            {"/htm_data/1908/16/3598134.html", "1908_16_3598134.html"},
+            {"/htm_data/1908/16/3618060.html", "1908_16_3618060.html"},
+            {"/htm_data/1908/15/3618059.html", "1908_15_3618059.html"},
+        }
+    )
+
+    for _, exp := range expected {
+        src, dest := exp[0], exp[1]
+        replaced := strings.Trim(postPathRe.ReplaceAllString(src, "_"), "_")
         assert.Equal(t, dest, replaced)
     }
 }

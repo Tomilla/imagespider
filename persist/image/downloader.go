@@ -6,6 +6,7 @@ import (
     "os"
     "path"
     "strconv"
+    "strings"
     "unicode/utf8"
 
     "github.com/google/uuid"
@@ -19,6 +20,9 @@ var (
     ValidImageExtension = set.New(".jpg", ".jpeg", ".gif", ".png")
 )
 
+const (
+    DefaultImageExtension = ".jpg"
+)
 type downloader struct {
     config.ImageConfig
     config.Limit
@@ -67,19 +71,20 @@ func (d *downloader) CreateWorker(s *scheduler) {
 
 func (d *downloader) GetFileName(baseFolder, postName string, postUrl string, imgIndex int) string {
     limit := d.ImagePathLenLimit
-    extension := path.Ext(postUrl)
+    extension := strings.ToLower(path.Ext(postUrl))
     if len(extension) == 0 || !ValidImageExtension.Has(extension) {
-        extension = ".jpg"
+        extension = DefaultImageExtension
     }
     if d.UniqFolder { // only provide filename is fine for unique folder
-        return baseFolder + "_" + util.LeftPad2Len(strconv.Itoa(imgIndex), "0", 3) + extension
+        return baseFolder +
+            strings.ToLower("_"+util.LeftPad2Len(strconv.Itoa(imgIndex), "0", 3)+extension)
     }
     // otherwise, we need join the post postName with filename
     u, err := netUrl.Parse(postUrl)
     if err != nil {
         postName = uuid.New().String()
     } else {
-        postName = u.Path
+        postName = strings.ToLower(u.Path)
         postName = path.Base(postName)
         lenCharacters := utf8.RuneCountInString(postName)
         if lenCharacters >= limit {

@@ -41,11 +41,11 @@ func (p PostListRequest) GetPost() *engine.Post {
     return nil
 }
 
-
 func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult {
+    if !p.Archiver(contents, url) {
+        config.L.Infof("Cannot archive content of %v", url)
+    }
     fmt.Println(url)
-    fmt.Println(util.LeftPad2Len("", "*", 80))
-    // fmt.Println(string(contents))
     doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
     util.CheckErr(err)
     allTableRow := doc.Find("tr.tr3.t_one.tac")
@@ -160,20 +160,39 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
             Post:  &post,
         })
     })
+    return &result
+}
+
+func (p PostListRequest) Archiver(contents []byte, url string) bool {
     u, err := netUrl.Parse(url)
-    util.CheckErr(err)
+    if err != nil {
+        config.L.Infof("Cannot parse url %v: %v", url, err)
+        return false
+    }
+
     logPath := config.C.GetLogPath()
     if !glog.CheckPathExists(logPath) {
         err := os.MkdirAll(logPath, util.DefaultFilePerm)
-        util.CheckErr(err)
+        if err != nil {
+            config.L.Infof("Cannot MkdirAll for %v: %v", logPath, err)
+            return false
+        }
     }
 
+    uBase := path.Base(u.Path)
+    uExt := path.Ext(u.Path)
+    if ValidWebPageExt.Has(uExt) {
+        uExt = DefaultWebPageExt
+    }
+
+    finalPath := uBase + "_" + u.RawQuery + uExt
     err = ioutil.WriteFile(
-        path.Join(logPath, strings.Replace(u.Path, string(os.PathSeparator), "_", -1)),
+        path.Join(logPath, strings.Trim(postPathRe.ReplaceAllString(finalPath, "_"), "_")),
         contents,
         0664)
-    util.CheckErr(err)
-
-    fmt.Println(util.RightPad2Len("", "*", 80))
-    return &result
+    if err != nil {
+        config.L.Infof("Cannot WriteFile of %v: %v", finalPath, err)
+        return false
+    }
+    return true
 }

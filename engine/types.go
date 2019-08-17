@@ -6,6 +6,7 @@ import (
 
 type BaseParser interface {
     Parser([]byte, string) *ParseResult
+    Archiver([]byte, string) bool
     GetURL() string
     SetURL(string)
     GetAgent() string
