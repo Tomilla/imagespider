@@ -8,6 +8,9 @@ import (
     "sync"
     "testing"
     "time"
+    "unicode/utf8"
+
+    "github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -16,10 +19,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestBufferedFileWriter(t *testing.T) {
+    var err error
     oldBufferSize := bufferSize
     bufferSize = 1024
     path := filepath.Join(os.TempDir(), "test.log")
-    os.Remove(path)
+    err = os.Remove(path)
+    if err != nil {
+        t.Errorf("Cannot remove path: %v\n", path)
+    }
     w, err := NewBufferedFileWriter(path)
     if err != nil {
         t.Error(err)
@@ -68,9 +75,15 @@ func TestBufferedFileWriter(t *testing.T) {
     }
 
     for i := 0; i < bufferSize; i++ {
-        w.Write([]byte{'1'})
+        _, err := w.Write([]byte{'1'})
+        if err != nil {
+            t.Error("Cannot write into w\n")
+        }
     }
-    w.Write([]byte{'2'}) // writes over bufferSize cause flushing
+    _, err = w.Write([]byte{'2'}) // writes over bufferSize cause flushing
+    if err != nil {
+        t.Error("Cannot write into w\n")
+    }
     n, err = f.Read(buf)
     if err != nil {
         t.Error(err)
@@ -100,8 +113,15 @@ func TestBufferedFileWriter(t *testing.T) {
         t.Errorf("next byte is %d", buf[1])
     }
 
-    f.Close()
-    w.Close()
+    err = f.Close()
+    if err != nil {
+        t.Error("Cannot close f")
+    }
+
+    err = w.Close()
+    if err != nil {
+        t.Error("Cannot close f")
+    }
     bufferSize = oldBufferSize
 }
 
@@ -131,7 +151,11 @@ func TestRotatingFileWriter(t *testing.T) {
 
     bs := []byte("0123456789")
     for i := 0; i < 20; i++ {
-        w.Write(bs)
+        _, err := w.Write(bs)
+        if err != nil {
+            t.Error("Cannot write into w")
+        }
+
     }
 
     stat, err = os.Stat(path)
@@ -166,7 +190,10 @@ func TestRotatingFileWriter(t *testing.T) {
 
     // second write
     for i := 0; i < 20; i++ {
-        w.Write(bs)
+        _, err := w.Write(bs)
+        if err != nil {
+            t.Error("Cannot write into w")
+        }
     }
 
     stat, err = os.Stat(path)
@@ -202,7 +229,10 @@ func TestRotatingFileWriter(t *testing.T) {
         t.Errorf("file size are %d bytes", stat.Size())
     }
 
-    w.Close()
+    err = w.Close()
+    if err != nil {
+        t.Error("Cannot close w")
+    }
 }
 
 func TestTimedRotatingFileWriterByDate(t *testing.T) {
@@ -249,7 +279,10 @@ func TestTimedRotatingFileWriterByDate(t *testing.T) {
         t.Errorf("file size are %d bytes", stat.Size())
     }
 
-    w.Write([]byte("123"))
+    _, err = w.Write([]byte("123"))
+    if err != nil {
+        t.Error("Cannot write into w")
+    }
     stat, err = os.Stat(path)
     if err != nil {
         t.Error(err)
@@ -278,7 +311,10 @@ func TestTimedRotatingFileWriterByDate(t *testing.T) {
         t.Errorf("file size are %d bytes", stat.Size())
     }
 
-    w.Write([]byte("4567"))
+    _, err = w.Write([]byte("4567"))
+    if err != nil {
+        t.Error("Cannot write into w")
+    }
     setNow(time.Date(2018, 11, 21, 16, 12, 34, 56, time.Local))
     time.Sleep(flushDuration * 4)
     stat, err = os.Stat(path)
@@ -310,7 +346,10 @@ func TestTimedRotatingFileWriterByDate(t *testing.T) {
         t.Error(err)
     }
 
-    w.Close()
+    err = w.Close()
+    if err != nil {
+        t.Error("Cannot close w")
+    }
     setNowFunc(time.Now)
     nextRotateDuration = oldNextRotateDuration
 }
@@ -359,7 +398,10 @@ func TestTimedRotatingFileWriterByHour(t *testing.T) {
         t.Errorf("file size are %d bytes", stat.Size())
     }
 
-    w.Write([]byte("123"))
+    _, err = w.Write([]byte("123"))
+    if err != nil {
+        t.Error("Cannot write into w")
+    }
     stat, err = os.Stat(path)
     if err != nil {
         t.Error(err)
@@ -388,7 +430,10 @@ func TestTimedRotatingFileWriterByHour(t *testing.T) {
         t.Errorf("file size are %d bytes", stat.Size())
     }
 
-    w.Write([]byte("4567"))
+    _, err = w.Write([]byte("4567"))
+    if err != nil {
+        t.Error("Cannot write into w")
+    }
     setNow(time.Date(2018, 11, 19, 18, 12, 34, 56, time.Local))
     time.Sleep(flushDuration * 4)
     stat, err = os.Stat(path)
@@ -420,7 +465,10 @@ func TestTimedRotatingFileWriterByHour(t *testing.T) {
         t.Error(err)
     }
 
-    w.Close()
+    err = w.Close()
+    if err != nil {
+        t.Error("Cannot close w")
+    }
     setNowFunc(time.Now)
     nextRotateDuration = oldNextRotateDuration
 }
@@ -449,4 +497,14 @@ func TestBadWriter(t *testing.T) {
 
     SetInternalLogger(oldLogger)
     l.Close()
+}
+
+func TestNewStdoutWriter(t *testing.T) {
+    l := NewStdoutWriter()
+    content := "Test"
+    n, err := l.Write([]byte(content))
+    if err != nil {
+        t.Fatal("Cannot write to Std Out")
+    }
+    assert.Equalf(t, n, utf8.RuneCountInString(content), "the length of content should be %v", n)
 }

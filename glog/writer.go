@@ -286,7 +286,10 @@ func (w *RotatingFileWriter) rotate() error {
     for i := w.backupCount; i > 1; i-- {
         oldPath := fmt.Sprintf("%s.%d", w.path, i-1)
         newPath := fmt.Sprintf("%s.%d", w.path, i)
-        os.Rename(oldPath, newPath) // ignore error
+        err := os.Rename(oldPath, newPath) // ignore error
+        if err != nil {
+            panic("Cannot rename path")
+        }
     }
 
     err = os.Rename(w.path, w.path+".1")

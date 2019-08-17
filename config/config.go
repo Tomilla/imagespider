@@ -22,6 +22,7 @@ import (
 var (
     C       *Config
     DB      *sql.DB
+    L       *glog.Logger
     BaseDir string
 )
 
@@ -34,6 +35,7 @@ type Config struct {
     Log          Log         `json:"log"`
     Db           DBConfig    `json:"db"`
     Net          Net         `json:"net"`
+    Limit        Limit       `json:"limit"`
     MameLenLimit int         `json:"nameLenLimit"`
     Engine       Engine      `json:"engine"`
     Elastic      Elastic
@@ -64,11 +66,12 @@ func (c *Config) GetElasticChan() chan model.Topic {
     return c.Elastic.topicChan
 }
 
-func (c *Config) GetNameLenLimit() int {
-    c.RLock()
-    defer c.RUnlock()
+func (c *Config) GetPostNameLenLimit() int {
+    return c.Limit.PostNameLenLimit
+}
 
-    return c.MameLenLimit
+func (c *Config) GetImagePathLenLimit() int {
+    return c.Limit.ImagePathLenLimit
 }
 
 func (c *Config) GetSleepRange() (int, int) {
@@ -105,6 +108,19 @@ func (c *Config) GetImageConfig() *ImageConfig {
     defer c.RUnlock()
 
     return &c.Image
+}
+
+func (c *Config) GetLimitConfig() *Limit {
+    c.RLock()
+    defer c.RUnlock()
+    return &c.Limit
+}
+
+func (c *Config) SetLimitConfig(postNameLenLimit int, imgPathLenLimit int) {
+    c.RLock()
+    defer c.RUnlock()
+    c.Limit.PostNameLenLimit = postNameLenLimit
+    c.Limit.ImagePathLenLimit = imgPathLenLimit
 }
 
 func (c *Config) GetImageChan() chan model.Topic {
@@ -256,4 +272,6 @@ func init() {
     DB.SetMaxOpenConns(C.GetDbMaxOpenConns())
     DB.SetMaxIdleConns(C.GetDbMaxIdleConns())
     DB.SetConnMaxLifetime(C.GetDbConnMaxLifetime())
+
+    L = glog.NewStdoutLogger()
 }

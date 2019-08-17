@@ -1,37 +1,37 @@
 package engine
 
 import (
-	"time"
+    "time"
 )
 
 type BaseParser interface {
-	Parser([]byte, string) ParseResult
-	GetURL() string
-	SetURL(string)
-	GetAgent() string
-	GetPost() *Post
+    Parser([]byte, string) *ParseResult
+    GetURL() string
+    SetURL(string)
+    GetAgent() string
+    GetPost() *Post
 }
 
 type Request struct {
-	URL        string
-	Agent      string
-	Post       *Post
-	ParserFunc func([]byte, string) ParseResult
+    URL        string
+    Agent      string
+    Post       *Post
+    ParserFunc func([]byte, string) ParseResult
 }
 
 type ParseResult struct {
-	Requests []BaseParser
-	Items    []interface{}
+    Requests []BaseParser
+    Items    []interface{}
 }
 
 type Post struct {
-	CreatedAt   time.Time
-	LastReplyAt time.Time
-	Author      string
-	Path        string
-	Title       string
-	CountReply  int
-	CountImage  int
+    CreatedAt   time.Time
+    LastReplyAt time.Time
+    Author      string
+    Path        string
+    Title       string
+    CountReply  int
+    CountImage  int
 }
 
 // func NewParseResult(items []interface{}) *ParseResult {
@@ -43,14 +43,14 @@ type Post struct {
 // }
 
 type Engine interface {
-	Run(s Scheduler, request []BaseParser)
-	Shutdown()
+    Run(s Scheduler, request []BaseParser)
+    Shutdown()
 }
 
 type Scheduler interface {
-	Schedule(chan bool)
-	SubmitRequest(parser BaseParser)
-	SubmitWorker(chan BaseParser)
+    Schedule(chan bool)
+    SubmitRequest(parser BaseParser)
+    SubmitWorker(chan BaseParser)
 
-	Shutdown()
+    Shutdown()
 }

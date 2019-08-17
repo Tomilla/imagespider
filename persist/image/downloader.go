@@ -1,21 +1,32 @@
 package image
 
 import (
+    "fmt"
+    netUrl "net/url"
     "os"
     "path"
     "strconv"
+    "unicode/utf8"
 
+    "github.com/google/uuid"
+
+    "github.com/Tomilla/imagespider/collections/set"
     "github.com/Tomilla/imagespider/config"
     "github.com/Tomilla/imagespider/util"
 )
 
+var (
+    ValidImageExtension = set.New(".jpg", ".jpeg", ".gif", ".png")
+)
+
 type downloader struct {
     config.ImageConfig
+    config.Limit
     workChan chan work
 }
 
-func NewDownloader(imageConfig *config.ImageConfig) *downloader {
-    return &downloader{ImageConfig: *imageConfig}
+func NewDownloader(imageConfig *config.ImageConfig, limit *config.Limit) *downloader {
+    return &downloader{ImageConfig: *imageConfig, Limit: *limit}
 }
 
 func (d *downloader) Run() {
@@ -41,7 +52,7 @@ func (d *downloader) Run() {
         }
 
         for i, url := range topic.Images { // pass to worker
-            fileName := d.getFileName(baseFolder, topic.Name, i)
+            fileName := d.GetFileName(baseFolder, topic.Name, url, i)
             w := newWork(url, fileName)
             workChan <- w
         }
@@ -54,11 +65,28 @@ func (d *downloader) CreateWorker(s *scheduler) {
     ws.Start()
 }
 
-func (d *downloader) getFileName(baseFolder, name string, index int) string {
-    if d.UniqFolder { // only provide filename is fine for unique folder
-        return baseFolder + strconv.Itoa(index) + ".jpg"
+func (d *downloader) GetFileName(baseFolder, postName string, postUrl string, imgIndex int) string {
+    limit := d.ImagePathLenLimit
+    extension := path.Ext(postUrl)
+    if len(extension) == 0 || !ValidImageExtension.Has(extension) {
+        extension = ".jpg"
     }
-    // otherwise, we need join the post name with filename
-    return path.Join(baseFolder, name+strconv.Itoa(index)+".jpg")
-
+    if d.UniqFolder { // only provide filename is fine for unique folder
+        return baseFolder + "_" + util.LeftPad2Len(strconv.Itoa(imgIndex), "0", 3) + extension
+    }
+    // otherwise, we need join the post postName with filename
+    u, err := netUrl.Parse(postUrl)
+    if err != nil {
+        postName = uuid.New().String()
+    } else {
+        postName = u.Path
+        postName = path.Base(postName)
+        lenCharacters := utf8.RuneCountInString(postName)
+        if lenCharacters >= limit {
+            r := []rune(postName)
+            r = r[lenCharacters-limit:]
+            postName = string(r)
+        }
+    }
+    return path.Join(baseFolder, fmt.Sprintf("%03v_%v", imgIndex, postName))
 }

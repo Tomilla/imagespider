@@ -14,7 +14,7 @@ func init() {
     config.C.SetImageChan(ch)               // engine 通过 这个channel 和downloader 通信
     config.C.SetImageHungryChan(hungryChan) // engine 通过 这个channel 和downloader 通信
 
-    d := NewDownloader(config.C.GetImageConfig())
+    d := NewDownloader(config.C.GetImageConfig(), config.C.GetLimitConfig())
 
     go d.Run() // start persist
 

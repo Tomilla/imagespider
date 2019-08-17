@@ -12,8 +12,14 @@ import (
 func TestLogger(t *testing.T) {
     infoPath := filepath.Join(os.TempDir(), "test_info.log")
     debugPath := filepath.Join(os.TempDir(), "test_debug.log")
-    os.Remove(infoPath)
-    os.Remove(debugPath)
+    err := os.Remove(infoPath)
+    if err != nil {
+        t.Errorf("Cannot remove path: %v\n", infoPath)
+    }
+    err = os.Remove(debugPath)
+    if err != nil {
+        t.Errorf("Cannot remove path: %v\n", debugPath)
+    }
 
     infoWriter, err := NewFileWriter(infoPath)
     if err != nil {
@@ -186,4 +192,10 @@ func TestCloseLogger(t *testing.T) {
         t.Error("close logger left its writer opened")
     }
     l.Close()
+}
+
+func TestNewStdoutLogger(t *testing.T) {
+    l := NewStdoutLogger()
+    content := "TestNewStdoutLogger"
+    l.Log(InfoLevel, "log_test", 194, content)
 }

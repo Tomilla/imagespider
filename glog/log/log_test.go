@@ -80,7 +80,10 @@ func TestLogFuncs(t *testing.T) {
 
 func BenchmarkBufferedFileLogger(b *testing.B) {
     path := filepath.Join(os.TempDir(), "test.log")
-    os.Remove(path)
+    err := os.Remove(path)
+    if err != nil {
+        b.Logf("cannot remove path: %v", path)
+    }
     w, err := glog.NewBufferedFileWriter(path)
     if err != nil {
         b.Error(err)
