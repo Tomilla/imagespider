@@ -5,6 +5,9 @@ import (
     "math/rand"
     "strings"
     "time"
+
+    "github.com/Tomilla/imagespider/collections/set"
+    "github.com/Tomilla/imagespider/config"
 )
 
 func CheckErr(e error) {
@@ -47,14 +50,62 @@ func GetLastItem(arr interface{}) string {
     return ""
 }
 
+func ConcatenateUrlOrder(url string, iterator [][]string, exclude []string) string {
+    var (
+        existentQuery [][]string
+        junction            = "?"
+        requestArgs   []string
+        pushFunc            = func(option map[string]string) {
+            key := option["key"]
+            val := option["val"]
+            if !Contains(exclude, key) {
+                requestArgs = append(requestArgs, key+"="+val)
+            }
+        }
+        pushFuncWrapper = func(reversed bool) func(string, string) {
+            return func(arg1, arg2 string) {
+                if reversed {
+                    arg1, arg2 = arg2, arg1
+                }
+                pushFunc(map[string]string{
+                    "key": arg1,
+                    "val": arg2,
+                })
+            }
+        }
+    )
+
+    if strings.Contains(url, "?") {
+        urlParts := strings.SplitN(url, "?", 2)
+        url = urlParts[0]
+        query := urlParts[1]
+
+        if len(query) > 0 {
+            queryPairs := strings.SplitN(query, "&", -1)
+            for _, pair := range queryPairs {
+                existentQuery = append(existentQuery, strings.SplitN(pair, "=", 2))
+            }
+        }
+    }
+
+    f := pushFuncWrapper(false)
+    queryMap := NewOrderQueryMap()
+    queryMap.Init(existentQuery)
+    for _, item := range iterator {
+        key, val := item[0], item[1]
+        _, ok := queryMap.M[key]
+        if ok {
+            config.L.Debugf("Override: %v -> %v", queryMap.M[key], val)
+            queryMap.Set(key, val)
+        } else {
+            queryMap.Set(key, val)
+        }
+    }
+    queryMap.Iterate(f)
+    return url + junction + strings.Join(requestArgs, "&")
+}
+
 func ConcatenateUrl(url string, iterator map[string]string, exclude []string) string {
-    // sort.Slice(exclude, func (i, j int) bool {
-    //     return exclude[i] < exclude[j]
-    // })
-    // needle := "test"
-    // idx := sort.Search(len(exclude), func (i int) bool {
-    //     return exclude[i] == needle
-    // })
     var (
         existentQuery = map[string]string{}
         junction      = "?"
@@ -97,7 +148,7 @@ func ConcatenateUrl(url string, iterator map[string]string, exclude []string) st
     for key, val := range iterator {
         _, ok := existentQuery[key]
         if ok {
-            fmt.Printf("Override: %v -> %v", existentQuery[key], val)
+            config.L.Infof("Override: %v -> %v", existentQuery[key], val)
             existentQuery[key] = val
         } else {
             existentQuery[key] = val
@@ -107,4 +158,20 @@ func ConcatenateUrl(url string, iterator map[string]string, exclude []string) st
         f(key, val)
     }
     return url + junction + strings.Join(requestArgs, "&")
+}
+
+func GetQuerySet(url string) *set.Set {
+    const (
+        queryStartMark = "?"
+        querySeparator = "&"
+    )
+
+    querySet := set.New()
+    if strings.Contains(url, queryStartMark) {
+        queryPart := strings.SplitN(url, queryStartMark, 2)[1]
+        for _, pair := range strings.SplitN(queryPart, querySeparator, -1) {
+            querySet.Insert(pair)
+        }
+    }
+    return querySet
 }

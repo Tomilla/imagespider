@@ -16,7 +16,6 @@ import (
 
     "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/model"
-    "github.com/Tomilla/imagespider/util"
 )
 
 var (
@@ -242,7 +241,7 @@ func LoadConfig() (c *Config) {
     if err != nil {
         fmt.Println(err.Error())
     }
-    newReader := util.RemoveComment(f)
+    newReader := RemoveComment(f)
     defer f.Close()
 
     jsonParser := json.NewDecoder(newReader)
