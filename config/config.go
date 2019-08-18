@@ -9,10 +9,13 @@ import (
     "os"
     "path"
     "runtime"
+    "strconv"
     "sync"
     "time"
 
     _ "github.com/go-sql-driver/mysql"
+
+    "github.com/go-redis/redis"
 
     "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/model"
@@ -21,6 +24,7 @@ import (
 var (
     C       *Config
     DB      *sql.DB
+    Redis   *redis.Client
     L       *glog.Logger
     BaseDir string
 )
@@ -33,6 +37,7 @@ type Config struct {
     Init         Init        `json:"init"`
     Log          Log         `json:"log"`
     Db           DBConfig    `json:"db"`
+    Redis        RedisConfig `json:"redis"`
     Net          Net         `json:"net"`
     Limit        Limit       `json:"limit"`
     MameLenLimit int         `json:"nameLenLimit"`
@@ -255,6 +260,23 @@ func PrintConfig(cfg *Config) {
     fmt.Printf("%+v\n", cfg)
 }
 
+func (c Config) NewRedisClient() *redis.Client {
+    addr := c.Redis.Host + ":" + strconv.Itoa(c.Redis.Port)
+    client := redis.NewClient(&redis.Options{
+        Addr:     addr,
+        Password: c.Redis.Password,
+        DB:       c.Redis.DB, // use default DB
+    })
+
+    pong, err := client.Ping().Result()
+    if err != nil {
+        return nil
+    }
+    fmt.Println(pong, err)
+    // Output: PONG <nil>
+    return client
+}
+
 func init() {
     var err error
     rand.Seed(time.Now().UnixNano())
@@ -277,4 +299,5 @@ func init() {
     DB.SetConnMaxLifetime(C.GetDbConnMaxLifetime())
 
     L = glog.NewStdoutLogger()
+    Redis = C.NewRedisClient()
 }
