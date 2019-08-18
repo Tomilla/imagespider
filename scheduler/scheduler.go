@@ -57,12 +57,12 @@ func (s *Scheduler) Schedule(hungry chan bool) {
                     ch := config.C.GetImageHungryChan()
                     if ch == nil {
                         hungry <- true
-                        time.Sleep(3)
+                        time.Sleep(30 * time.Millisecond)
                     } else {
                         select {
                         case <-ch:
                             hungry <- true
-                            time.Sleep(3)
+                            time.Sleep(30 * time.Millisecond)
                         default:
                         }
                     }

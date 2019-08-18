@@ -23,7 +23,7 @@ func (e *ConcurrentEngine) Shutdown() {
     close(e.ImageChan) // 不继续发送图片下载
     e.s.Shutdown()
     // e.ElasticChan.Stop() // stop elasticSearch client
-    time.Sleep(10)
+    time.Sleep(100 * time.Millisecond)
 
 }
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {

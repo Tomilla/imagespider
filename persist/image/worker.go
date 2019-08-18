@@ -98,12 +98,15 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     }
 
     _, err = io.Copy(newFile, buf)
-    util.WarnErr(err)
+    if err != nil {
+        util.WarnErr(err)
+    } else {
+        if config.C.GetShowDownloadProgress() {
+            config.L.Infof("Image Downloaded: %v/%v\n%v\n", path.Base(path.Dir(fileName)), path.Base(fileName), link)
+        }
+    }
     defer func() {
         util.WarnErr(newFile.Close())
-        if config.C.GetShowDownloadProgress() {
-            config.L.Infof("Image Downloaded: %v\n%v\n", path.Base(fileName), link)
-        }
     }()
     return nil
 }

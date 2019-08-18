@@ -86,3 +86,5 @@ func ExtractImageUrls(content interface{}, matches chan string) {
     }
     close(matches)
 }
+
+

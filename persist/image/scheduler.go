@@ -23,7 +23,7 @@ func (s *scheduler) schedule() {
     var workQ []work
     var readyQ []chan work
     var preCount int32
-    ticker1 := time.Tick(4 * time.Second)
+    ticker1 := time.Tick(2 * time.Second)
     ticker2 := time.Tick(1 * time.Second)
     for {
         var activeWork work
@@ -50,6 +50,10 @@ func (s *scheduler) schedule() {
                 log.Printf("[Downloader worker] #%d downloaded [workQ len %d cap %d], [readyQ len %d cap %d]\n",
                     v, len(workQ), cap(workQ), len(readyQ), cap(readyQ))
             }
+            // terminated
+            if len(workQ) == 0 {
+                return
+            }
         case <-ticker2:
             // 如果任务为空了， 则请求添加任务
             if len(workQ) == 0 && len(readyQ) >= s.workerCount/2 {
@@ -57,7 +61,7 @@ func (s *scheduler) schedule() {
                     ch := config.C.GetImageHungryChan()
                     ch <- true
                     fmt.Println("[All image requests are done, request more]")
-                    time.Sleep(5)
+                    time.Sleep(50 * time.Millisecond)
                 }()
             }
         }

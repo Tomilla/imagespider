@@ -28,7 +28,20 @@ func (p PostRequest) GetURL() string {
     return p.URL
 }
 
-func (p PostRequest) SetURL(new string) {
+func (p *PostRequest) SetURL(new string) bool {
+    old := p.URL
+    uOld, err := netUrl.Parse(old)
+    if err != nil {
+        return false
+    }
+    uNew, err := netUrl.Parse(new)
+    if err != nil {
+        return false
+    }
+    if uOld.Host == uNew.Host && uOld.Path == uNew.Path {
+        p.URL = uOld.Host + uOld.Path
+    }
+
     p.URL = new
 }
 

@@ -51,7 +51,7 @@ func (g *Generator) Generate() {
 func (g *Generator) GenerateStartRequest(realms []string) {
 
     for _, url := range realms {
-        g.startRequests = append(g.startRequests, parser.PostListRequest{
+        g.startRequests = append(g.startRequests, &parser.PostListRequest{
             URL:   url,
             Agent: uarand.GetRandom(),
         })

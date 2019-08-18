@@ -29,8 +29,9 @@ func (p PostListRequest) GetURL() string {
     return p.URL
 }
 
-func (p PostListRequest) SetURL(new string) {
+func (p *PostListRequest) SetURL(new string) bool {
     p.URL = new
+    return true
 }
 
 func (p PostListRequest) GetAgent() string {
@@ -154,7 +155,7 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
         // fmt.Println(pTitle)
         fmt.Println(post)
         result.Items = append(result.Items, "topic: "+post.Title)
-        result.Requests = append(result.Requests, PostRequest{
+        result.Requests = append(result.Requests, &PostRequest{
             URL:   HOSTNAME + post.Path,
             Agent: uarand.GetRandom(),
             Post:  &post,
