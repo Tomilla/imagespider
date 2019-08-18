@@ -17,16 +17,18 @@ type Generator struct {
     realms        []string
     startRequests []engine.BaseParser
     count         int
-    endPageNum    int
+    startPageNum  int
+    stopPageNum   int
     requestChan   chan engine.BaseParser
 }
 
 func NewGenerator(realms []string) chan engine.BaseParser {
     start, stop := config.C.GetPageLimit()
     g := &Generator{
-        realms:     realms,
-        count:      start,
-        endPageNum: stop,
+        realms:       realms,
+        count:        0,
+        startPageNum: start,
+        stopPageNum:  stop,
     }
     g.requestChan = make(chan engine.BaseParser)
     go g.Generate()
@@ -41,7 +43,7 @@ func (g *Generator) Generate() {
     g.GenerateStartRequest(g.realms)
     for {
         g.GenerateNextRequest()
-        if g.count > g.endPageNum {
+        if g.count > g.stopPageNum {
             close(g.requestChan)
             return
         }
@@ -70,8 +72,8 @@ func (g *Generator) GenerateNextRequest() {
     for _, request := range g.startRequests {
         newRequest := request
         newRequest.SetURL(util.ConcatenateUrlOrder(newRequest.GetURL(), util.GetQueryPair(aux), []string{}))
+        config.L.Infof("RequestsChan Url: %v", newRequest.GetURL())
         g.requestChan <- newRequest
     }
     g.count++
-
 }

@@ -46,6 +46,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 
             select {
             case newReq := <-s.requestChan:
+                config.L.Infof("Url: %v", newReq.GetURL())
                 requestQ = append(requestQ, newReq)
             case readyWorker := <-s.workChan:
                 workQ = append(workQ, readyWorker)
