@@ -12,6 +12,9 @@ const (
     DateTimeDefault = "3000-01-01 01:01:00"
     TimeZone        = "Asia/Shanghai"
     DefaultFilePerm = 0755
+    queryStartMark  = "?"
+    querySeparator  = "&"
+    queryPairMark   = "="
 )
 
 var (

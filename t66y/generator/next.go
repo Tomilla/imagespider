@@ -8,9 +8,10 @@ import (
     "github.com/Tomilla/imagespider/config"
     "github.com/Tomilla/imagespider/engine"
     "github.com/Tomilla/imagespider/t66y/parser"
+    "github.com/Tomilla/imagespider/util"
 )
 
-const nextString = "&search=&page="
+const nextString = "search=&page="
 
 type Generator struct {
     realms        []string
@@ -68,7 +69,7 @@ func (g *Generator) GenerateNextRequest() {
     }
     for _, request := range g.startRequests {
         newRequest := request
-        newRequest.SetURL(newRequest.GetURL() + aux)
+        newRequest.SetURL(util.ConcatenateUrlOrder(newRequest.GetURL(), util.GetQueryPair(aux), []string{}))
         g.requestChan <- newRequest
     }
     g.count++

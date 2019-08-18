@@ -161,11 +161,6 @@ func ConcatenateUrl(url string, iterator map[string]string, exclude []string) st
 }
 
 func GetQuerySet(url string) *set.Set {
-    const (
-        queryStartMark = "?"
-        querySeparator = "&"
-    )
-
     querySet := set.New()
     if strings.Contains(url, queryStartMark) {
         queryPart := strings.SplitN(url, queryStartMark, 2)[1]
@@ -174,4 +169,24 @@ func GetQuerySet(url string) *set.Set {
         }
     }
     return querySet
+}
+
+func GetQueryPair(url string) [][]string {
+    var (
+        queryPart string
+        result    [][]string
+    )
+    if len(url) == 0 {
+        return [][]string{}
+    }
+
+    if strings.Contains(url, queryStartMark) {
+        queryPart = strings.SplitN(url, queryStartMark, 2)[1]
+    } else {
+        queryPart = url
+    }
+    for _, pair := range strings.SplitN(queryPart, querySeparator, -1) {
+        result = append(result, strings.SplitN(pair, queryPairMark, 2))
+    }
+    return result
 }

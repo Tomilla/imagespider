@@ -15,37 +15,37 @@ func TestConcatenateUrlOrder(t *testing.T) {
     }
     var (
         sourceAndExcepted = []TestInfo{
-            {"http://t66y.com/thread0806.php?fid=16",
+            {"http://example.com/thread0806.php?fid=16",
                 [][]string{
                     {"search", "",},
                     {"page", "1",},
                 },
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=1",
+                "http://example.com/thread0806.php?fid=16&search=&page=1",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=1",
+            {"http://example.com/thread0806.php?fid=16&search=&page=1",
                 [][]string{
                     {"search", "",},
                     {"page", "2",},
                 },
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=2",
+                "http://example.com/thread0806.php?fid=16&search=&page=2",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=2",
+            {"http://example.com/thread0806.php?fid=16&search=&page=2",
                 [][]string{
                     {"search", "A",},
                     {"page", "3",},
                 },
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=A&page=3",
+                "http://example.com/thread0806.php?fid=16&search=A&page=3",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=3",
+            {"http://example.com/thread0806.php?fid=16&search=&page=3",
                 [][]string{
                     {"search", "B",},
                     {"page", "4",},
                 },
                 []string{"search"},
-                "http://t66y.com/thread0806.php?fid=16&page=4",
+                "http://example.com/thread0806.php?fid=16&page=4",
             },
         }
     )
@@ -67,52 +67,52 @@ func TestConcatenateUrl(t *testing.T) {
     }
     var (
         sourceAndExcepted = []TestInfo{
-            {"http://t66y.com/thread0806.php?fid=16",
+            {"http://example.com/thread0806.php?fid=16",
                 map[string]string{"search": "", "page": "1"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=1",
+                "http://example.com/thread0806.php?fid=16&search=&page=1",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=1",
+            {"http://example.com/thread0806.php?fid=16&search=&page=1",
                 map[string]string{"search": "", "page": "2"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=2",
+                "http://example.com/thread0806.php?fid=16&search=&page=2",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=2",
+            {"http://example.com/thread0806.php?fid=16&search=&page=2",
                 map[string]string{"search": "A", "page": "3"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=A&page=3",
+                "http://example.com/thread0806.php?fid=16&search=A&page=3",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=3",
+            {"http://example.com/thread0806.php?fid=16&search=&page=3",
                 map[string]string{"search": "B", "page": "4"},
                 []string{"search"},
-                "http://t66y.com/thread0806.php?fid=16&page=4",
+                "http://example.com/thread0806.php?fid=16&page=4",
             },
         }
         sourceAndWrong = []TestInfo{
-            {"http://t66y.com/thread0806.php?fid=16",
+            {"http://example.com/thread0806.php?fid=16",
                 map[string]string{"search": "", "page": "1"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=1&hello=tomi",
+                "http://example.com/thread0806.php?fid=16&search=&page=1&hello=tomi",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=3",
+            {"http://example.com/thread0806.php?fid=16&search=&page=3",
                 map[string]string{"search": "B", "page": "4"},
                 []string{"search"},
-                "http://t66y.com/thread0806.php?fid=18&page=3",
+                "http://example.com/thread0806.php?fid=18&page=3",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=1",
+            {"http://example.com/thread0806.php?fid=16&search=&page=1",
                 map[string]string{"search": "", "page": "2"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=15",
+                "http://example.com/thread0806.php?fid=15",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=2",
+            {"http://example.com/thread0806.php?fid=16&search=&page=2",
                 map[string]string{"search": "B", "page": "4"},
                 []string{},
-                "http://t66y.com/thread0806.php?fid=16&search=&page=2",
+                "http://example.com/thread0806.php?fid=16&search=&page=2",
             },
-            {"http://t66y.com/thread0806.php?fid=16&search=&page=2",
+            {"http://example.com/thread0806.php?fid=16&search=&page=2",
                 map[string]string{"search": "B", "page": "4"},
                 []string{},
-                "http://t66y.com/thread0806.php",
+                "http://example.com/thread0806.php",
             },
         }
         startTest = func(tInfo []TestInfo, isEqual bool) {
@@ -138,4 +138,124 @@ func TestConcatenateUrl(t *testing.T) {
     )
     startTest(sourceAndExcepted, true)
     startTest(sourceAndWrong, false)
+}
+
+func TestGetQuerySet(t *testing.T) {
+    type TestInfo struct {
+        url  string
+        size int
+    }
+    var (
+        sourceAndExcepted = []*TestInfo{
+            {"http://example.com/thread0806.php?fid=16", 1},
+            {"http://example.com/thread0806.php?fid=16&search=", 2},
+            {"http://example.com/thread0806.php?fid=16&search=&page=1", 3},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2", 3},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2&name=tomi", 4},
+        }
+        sourceAndWrong = []*TestInfo{
+            {"http://example.com/thread0806.php?fid=16", 2},
+            {"http://example.com/thread0806.php?fid=16&search=", 4},
+            {"http://example.com/thread0806.php?fid=16&search=&page=1", 1},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2", 2},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2&name=tomi", 5},
+        }
+    )
+    for _, info := range sourceAndExcepted {
+        assert.Equal(t, GetQuerySet(info.url).Len(), info.size)
+    }
+    for _, info := range sourceAndWrong {
+        assert.NotEqual(t, GetQuerySet(info.url).Len(), info.size)
+    }
+}
+
+func TestGetQueryPair(t *testing.T) {
+    type TestInfo struct {
+        url string
+        ret [][]string
+    }
+    var (
+        sourceAndExcepted = []*TestInfo{
+            {"http://example.com/thread0806.php?fid=16", [][]string{
+                {"fid", "16",},
+            }},
+            {"http://example.com/thread0806.php?fid=16&search=", [][]string{
+                {"fid", "16",},
+                {"search", "",},
+            }},
+            {"http://example.com/thread0806.php?fid=16&search=&page=1", [][]string{
+                {"fid", "16",},
+                {"search", "",},
+                {"page", "1",},
+            }},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2", [][]string{
+                {"fid", "18",},
+                {"search", "B",},
+                {"page", "2",},
+            }},
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2&name=tomi", [][]string{
+                {"fid", "18",},
+                {"search", "B",},
+                {"page", "2",},
+                {"name", "tomi",},
+            }},
+            // test without host part and path part
+            {"fid=18&search=B&page=2", [][]string{
+                {"fid", "18",},
+                {"search", "B",},
+                {"page", "2",},
+            }},
+            // test empty string
+            {"", [][]string{
+            }},
+        }
+        sourceAndWrong = []*TestInfo{
+            // test different pair
+            {"http://example.com/thread0806.php?fid=16", [][]string{
+                {"fid", "18",},
+            }},
+            // test different length
+            {"http://example.com/thread0806.php?fid=16&search=", [][]string{
+                {"fid", "16",},
+            }},
+            // same as above, but except longer length
+            {"http://example.com/thread0806.php?fid=16&search=&page=1", [][]string{
+                {"fid", "16",},
+                {"search", "",},
+                {"page", "1",},
+                {"limit", "1",},
+            }},
+            // test wrong order
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2", [][]string{
+                {"fid", "12",},
+                {"page", "2",},
+                {"search", "A",},
+            }},
+            // test wrong size and wrong value
+            {"http://example.com/thread0806.php?fid=18&search=B&page=2&name=tomi", [][]string{
+                {"fid", "18",},
+                {"search", "B",},
+                {"page", "1",},
+            }},
+            // test without host part and path part
+            {"fid=18&search=B&page=2", [][]string{
+                {"fid", "18",},
+                {"search", "B",},
+                {"page", "3",},
+            }},
+            // test empty string
+            {"", [][]string{
+                {"search", "B",},
+                {"page", "3",},
+            }},
+        }
+    )
+    for _, info := range sourceAndExcepted {
+        result := GetQueryPair(info.url)
+        assert.Equal(t, info.ret, result)
+    }
+    for _, info := range sourceAndWrong {
+        result := GetQueryPair(info.url)
+        assert.NotEqual(t, info.ret, result)
+    }
 }
