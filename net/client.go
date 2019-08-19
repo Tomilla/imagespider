@@ -6,7 +6,7 @@ import (
     "net/url"
     "time"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 type Client struct{}
@@ -18,7 +18,7 @@ func NewClient(useProxy bool) *http.Client {
         // Proxy:           http.ProxyURL(proxyURL),
     }
     if useProxy {
-        proxyStr := config.C.GetProxyURL()
+        proxyStr := common.C.GetProxyURL()
         if proxyStr != "" {
             proxyURL, err := url.Parse(proxyStr)
             if err != nil {
@@ -29,7 +29,7 @@ func NewClient(useProxy bool) *http.Client {
 
     }
 
-    timeOut := config.C.GetNetTimeOut()
+    timeOut := common.C.GetNetTimeOut()
     client := &http.Client{
         Timeout:   time.Duration(timeOut) * time.Second,
         Transport: tr, // 解决x509: certificate signed by unknown authority

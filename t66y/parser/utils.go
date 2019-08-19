@@ -6,13 +6,13 @@ import (
 
     "github.com/PuerkitoBio/goquery"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 func NormalizeName(s string) string {
     // s = strings.Trim(s, "[]")
     // fmt.Println("before -- > ", s)
-    limit := config.C.GetPostNameLenLimit()
+    limit := common.C.GetPostNameLenLimit()
     // remove quote
     s = quoteRe.ReplaceAllString(s, `$1`)
     // remove punctuation
@@ -52,9 +52,9 @@ func ExtractImageUrls(content interface{}, matches chan string) {
                 if !exist {
                     html, err := inputTag.Html()
                     if err != nil {
-                        config.L.Debug("It's not a valid image tag.")
+                        common.L.Debug("It's not a valid image tag.")
                     } else {
-                        config.L.Debugf("It's not a valid image tag.\n", html)
+                        common.L.Debugf("It's not a valid image tag.\n", html)
                     }
                 }
             }
@@ -70,7 +70,7 @@ func ExtractImageUrls(content interface{}, matches chan string) {
         content := content.(string)
         doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
         if err != nil {
-            config.L.Debugf("Cannot create document from content: %v\n", content)
+            common.L.Debugf("Cannot create document from content: %v\n", content)
         }
         ExtractImageUrls(doc, matches)
         break
@@ -78,7 +78,7 @@ func ExtractImageUrls(content interface{}, matches chan string) {
         content := content.([]byte)
         doc, err := goquery.NewDocumentFromReader(bytes.NewReader(content))
         if err != nil {
-            config.L.Debugf("Cannot create document from content: %v\n", content)
+            common.L.Debugf("Cannot create document from content: %v\n", content)
         }
         ExtractImageUrls(doc, matches)
     default:

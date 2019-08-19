@@ -1,4 +1,4 @@
-package config
+package common
 
 type Limit struct {
     ImagePathLenLimit int `json:"imagePathLenLimit"`

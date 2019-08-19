@@ -7,7 +7,7 @@ import (
     "time"
 
     "github.com/Tomilla/imagespider/collections/set"
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 func CheckErr(e error) {
@@ -95,7 +95,7 @@ func ConcatenateUrlOrder(url string, iterator [][]string, exclude []string) stri
         key, val := item[0], item[1]
         _, ok := queryMap.M[key]
         if ok {
-            config.L.Debugf("Override: %v -> %v", queryMap.M[key], val)
+            common.L.Debugf("Override: %v -> %v", queryMap.M[key], val)
             queryMap.Set(key, val)
         } else {
             queryMap.Set(key, val)
@@ -148,7 +148,7 @@ func ConcatenateUrl(url string, iterator map[string]string, exclude []string) st
     for key, val := range iterator {
         _, ok := existentQuery[key]
         if ok {
-            config.L.Infof("Override: %v -> %v", existentQuery[key], val)
+            common.L.Infof("Override: %v -> %v", existentQuery[key], val)
             existentQuery[key] = val
         } else {
             existentQuery[key] = val

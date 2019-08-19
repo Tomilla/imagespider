@@ -5,7 +5,7 @@ import (
     "sync/atomic"
     "time"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
 )
 
@@ -46,7 +46,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
 
             select {
             case newReq := <-s.requestChan:
-                config.L.Infof("Url: %v", newReq.GetURL())
+                common.L.Infof("Url: %v", newReq.GetURL())
                 requestQ = append(requestQ, newReq)
             case readyWorker := <-s.workChan:
                 workQ = append(workQ, readyWorker)
@@ -54,8 +54,8 @@ func (s *Scheduler) Schedule(hungry chan bool) {
                 requestQ = requestQ[1:]
                 workQ = workQ[1:]
             case <-tick:
-                if len(requestQ) == 0 && len(workQ) == config.C.GetEngineWorkerCount() {
-                    ch := config.C.GetImageHungryChan()
+                if len(requestQ) == 0 && len(workQ) == common.C.GetEngineWorkerCount() {
+                    ch := common.C.GetImageHungryChan()
                     if ch == nil {
                         hungry <- true
                         time.Sleep(30 * time.Millisecond)

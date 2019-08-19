@@ -5,16 +5,16 @@ import (
 
     "github.com/stretchr/testify/assert"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 func TestDownloader_GetFileName(t *testing.T) {
-    limit := config.C.GetLimitConfig()
+    limit := common.C.GetLimitConfig()
     oldPostNameLenLimit := limit.PostNameLenLimit
     oldImgPathLenLimit := limit.ImagePathLenLimit
 
-    config.C.SetLimitConfig(60, 25)
-    d := NewDownloader(config.C.GetImageConfig(), config.C.GetLimitConfig())
+    common.C.SetLimitConfig(60, 25)
+    d := NewDownloader(common.C.GetImageConfig(), common.C.GetLimitConfig())
     var sourceAndExcept = [][]string{
         {"https://www.skeimg.com/u/20190803/15403922.jpg", "00年小母狗还需要一些K9 ", "000_15403922.jpg"},
         {"https://www.touimg.com/u/20190727/06262236.gif", "熟女陪我666", "001_06262236.gif"},
@@ -34,5 +34,5 @@ func TestDownloader_GetFileName(t *testing.T) {
     }
 
     // restore config
-    config.C.SetLimitConfig(oldPostNameLenLimit, oldImgPathLenLimit)
+    common.C.SetLimitConfig(oldPostNameLenLimit, oldImgPathLenLimit)
 }

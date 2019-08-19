@@ -1,4 +1,4 @@
-package config
+package common
 
 type Log struct {
     ShowDownloadProgress bool   `json:"showDownloadProgress"`

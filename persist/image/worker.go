@@ -9,7 +9,7 @@ import (
     "path"
     "sync/atomic"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/net"
     "github.com/Tomilla/imagespider/util"
@@ -50,7 +50,7 @@ func (w *worker) work() {
         }
 
         w.Download(task)
-        util.SleepRandomDuration(config.C.GetSleepRange())
+        util.SleepRandomDuration(common.C.GetSleepRange())
         w.s.Ready(workChan)
 
     }
@@ -101,8 +101,8 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     if err != nil {
         util.WarnErr(err)
     } else {
-        if config.C.GetShowDownloadProgress() {
-            config.L.Infof("Image Downloaded: %v/%v\n%v\n", path.Base(path.Dir(fileName)), path.Base(fileName), link)
+        if common.C.GetShowDownloadProgress() {
+            common.L.Infof("Image Downloaded: %v/%v\n%v\n", path.Base(path.Dir(fileName)), path.Base(fileName), link)
         }
     }
     defer func() {

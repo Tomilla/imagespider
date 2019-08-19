@@ -5,7 +5,7 @@ import (
 
     "github.com/corpix/uarand"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
     "github.com/Tomilla/imagespider/t66y/parser"
     "github.com/Tomilla/imagespider/util"
@@ -23,7 +23,7 @@ type Generator struct {
 }
 
 func NewGenerator(realms []string) chan engine.BaseParser {
-    start, stop := config.C.GetPageLimit()
+    start, stop := common.C.GetPageLimit()
     g := &Generator{
         realms:       realms,
         count:        0,
@@ -72,7 +72,7 @@ func (g *Generator) GenerateNextRequest() {
     for _, request := range g.startRequests {
         newRequest := request
         newRequest.SetURL(util.ConcatenateUrlOrder(newRequest.GetURL(), util.GetQueryPair(aux), []string{}))
-        config.L.Infof("RequestsChan Url: %v", newRequest.GetURL())
+        common.L.Infof("RequestsChan Url: %v", newRequest.GetURL())
         g.requestChan <- newRequest
     }
     g.count++

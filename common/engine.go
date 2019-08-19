@@ -1,4 +1,4 @@
-package config
+package common
 
 type Engine struct {
     WorkerCount int    `json:"workerCount"`

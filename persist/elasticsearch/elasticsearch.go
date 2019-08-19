@@ -6,7 +6,7 @@ import (
 
     elastic "github.com/elastic/go-elasticsearch/v7"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/model"
     "github.com/Tomilla/imagespider/util"
 )
@@ -17,13 +17,13 @@ type ela struct {
 }
 
 func NewConnection() *elastic.Client {
-    endpoint := config.C.GetEngineElasticUrl()
+    endpoint := common.C.GetEngineElasticUrl()
     if endpoint == "" {
         return nil
     }
     cfg := elastic.Config{
         Addresses: []string{
-            config.C.GetEngineElasticUrl(),
+            common.C.GetEngineElasticUrl(),
         },
     }
     client, err := elastic.NewClient(cfg)
@@ -57,7 +57,7 @@ func (e *ela) saveElasticSearch() {
 
 func init() {
     ch := make(chan model.Topic)
-    config.C.SetElasticChan(ch)
+    common.C.SetElasticChan(ch)
     e := New(ch)
     go e.saveElasticSearch()
 }

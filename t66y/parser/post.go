@@ -11,7 +11,7 @@ import (
 
     "github.com/PuerkitoBio/goquery"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
     "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/model"
@@ -43,7 +43,7 @@ func (p PostRequest) GetPost() *engine.Post {
 
 func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     if !p.Archiver(contents, url) {
-        config.L.Infof("Cannot archive content of :", url)
+        common.L.Infof("Cannot archive content of :", url)
     }
     doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
     if err != nil {
@@ -88,17 +88,17 @@ func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
 
 func (p PostRequest) Archiver(contents []byte, url string) bool {
 
-    logPath := config.C.GetLogPath()
+    logPath := common.C.GetLogPath()
     if !glog.CheckPathExists(logPath) {
         err := os.MkdirAll(logPath, util.DefaultFilePerm)
         if err != nil {
-            config.L.Debug("Cannot create logPath")
+            common.L.Debug("Cannot create logPath")
             return false
         }
     }
     u, err := netUrl.Parse(url)
     if err != nil {
-        config.L.Debug("Cannot parse url")
+        common.L.Debug("Cannot parse url")
         return false
     }
     err = ioutil.WriteFile(
@@ -106,7 +106,7 @@ func (p PostRequest) Archiver(contents []byte, url string) bool {
         contents,
         0664)
     if err != nil {
-        config.L.Error("Cannot write logPath")
+        common.L.Error("Cannot write logPath")
         return false
     }
     return true

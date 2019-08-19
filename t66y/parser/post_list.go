@@ -14,7 +14,7 @@ import (
     "github.com/PuerkitoBio/goquery"
     "github.com/corpix/uarand"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
     "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/util"
@@ -44,14 +44,14 @@ func (p PostListRequest) GetPost() *engine.Post {
 
 func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult {
     if !p.Archiver(contents, url) {
-        config.L.Infof("Cannot archive content of %v", url)
+        common.L.Infof("Cannot archive content of %v", url)
     }
     fmt.Println(url)
     doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
     util.CheckErr(err)
     allTableRow := doc.Find("tr.tr3.t_one.tac")
 
-    replyLow, replyHigh := config.C.GetReplyRange() // limit the topic count
+    replyLow, replyHigh := common.C.GetReplyRange() // limit the topic count
     result := engine.ParseResult{}
 
     var postColor string
@@ -73,7 +73,7 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
         // fmt.Println(util.LeftPad2Len("", "-", 80))
         // fmt.Printf("%05v %v\n", n, baseHtml)
         // fmt.Println(util.RightPad2Len("", "-", 80))
-        db := config.DB
+        db := common.DB
         if db != nil {
             // do something
         }
@@ -167,15 +167,15 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
 func (p PostListRequest) Archiver(contents []byte, url string) bool {
     u, err := netUrl.Parse(url)
     if err != nil {
-        config.L.Infof("Cannot parse url %v: %v", url, err)
+        common.L.Infof("Cannot parse url %v: %v", url, err)
         return false
     }
 
-    logPath := config.C.GetLogPath()
+    logPath := common.C.GetLogPath()
     if !glog.CheckPathExists(logPath) {
         err := os.MkdirAll(logPath, util.DefaultFilePerm)
         if err != nil {
-            config.L.Infof("Cannot MkdirAll for %v: %v", logPath, err)
+            common.L.Infof("Cannot MkdirAll for %v: %v", logPath, err)
             return false
         }
     }
@@ -196,7 +196,7 @@ func (p PostListRequest) Archiver(contents []byte, url string) bool {
         contents,
         0664)
     if err != nil {
-        config.L.Infof("Cannot WriteFile of %v: %v", finalPath, err)
+        common.L.Infof("Cannot WriteFile of %v: %v", finalPath, err)
         return false
     }
     return true

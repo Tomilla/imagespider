@@ -5,7 +5,7 @@ import (
     "log"
     "time"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/model"
 )
 
@@ -29,14 +29,14 @@ func (e *ConcurrentEngine) Shutdown() {
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {
 
     e.s = s
-    e.ElasticChan = config.C.GetElasticChan() // new ElasticChan client
+    e.ElasticChan = common.C.GetElasticChan() // new ElasticChan client
 
     out := make(chan *ParseResult)
     hungry := make(chan bool)
     go s.Schedule(hungry) // scheduler started
 
     w := newWorker()
-    for i := 0; i < config.C.GetEngineWorkerCount(); i++ {
+    for i := 0; i < common.C.GetEngineWorkerCount(); i++ {
         go w.work(s, out) // 创建所有worker
     }
 

@@ -12,7 +12,7 @@ import (
     "github.com/google/uuid"
 
     "github.com/Tomilla/imagespider/collections/set"
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/util"
 )
 
@@ -24,12 +24,12 @@ const (
     DefaultImageExtension = ".jpg"
 )
 type downloader struct {
-    config.ImageConfig
-    config.Limit
+    common.ImageConfig
+    common.Limit
     workChan chan work
 }
 
-func NewDownloader(imageConfig *config.ImageConfig, limit *config.Limit) *downloader {
+func NewDownloader(imageConfig *common.ImageConfig, limit *common.Limit) *downloader {
     return &downloader{ImageConfig: *imageConfig, Limit: *limit}
 }
 

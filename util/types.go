@@ -4,7 +4,7 @@ import (
     "crypto/sha1"
     "encoding/hex"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 func Hash(s string) string {
@@ -58,7 +58,7 @@ func (o *OrderQueryMap) Set(k string, v string) {
     }
 }
 func (o OrderQueryMap) Iterate(f func(string, string)) {
-    config.L.Debugf("keys(in insert order): %v", o.keys)
+    common.L.Debugf("keys(in insert order): %v", o.keys)
     for _, key := range o.keys {
         val := o.M[key]
         f(key, val)

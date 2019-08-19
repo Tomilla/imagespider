@@ -1,6 +1,6 @@
 package engine
 
-import "github.com/Tomilla/imagespider/config"
+import "github.com/Tomilla/imagespider/common"
 
 type ParserFunc func(
     contents []byte, url string) ParseResult
@@ -36,7 +36,7 @@ func (NilParser) Parse(
 
 func (NilParser) Serialize() (
     name string, args interface{}) {
-    return config.NilParser, nil
+    return common.NilParser, nil
 }
 
 type FuncParser struct {

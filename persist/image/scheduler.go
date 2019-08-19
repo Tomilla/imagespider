@@ -6,7 +6,7 @@ import (
     "sync/atomic"
     "time"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
 )
 
 type scheduler struct {
@@ -16,7 +16,7 @@ type scheduler struct {
 }
 
 func newScheduler(workChan chan work, readyChan chan chan work) *scheduler {
-    return &scheduler{workChan: workChan, readyChan: readyChan, workerCount: config.C.GetImageWorkerCount()}
+    return &scheduler{workChan: workChan, readyChan: readyChan, workerCount: common.C.GetImageWorkerCount()}
 }
 
 func (s *scheduler) schedule() {
@@ -58,7 +58,7 @@ func (s *scheduler) schedule() {
             // 如果任务为空了， 则请求添加任务
             if len(workQ) == 0 && len(readyQ) >= s.workerCount/2 {
                 go func() {
-                    ch := config.C.GetImageHungryChan()
+                    ch := common.C.GetImageHungryChan()
                     ch <- true
                     fmt.Println("[All image requests are done, request more]")
                     time.Sleep(50 * time.Millisecond)

@@ -1,4 +1,4 @@
-package config
+package common
 
 type Net struct {
     TimeOut  int    `json:"timeOut"`

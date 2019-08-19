@@ -3,7 +3,7 @@ package engine
 import (
     "log"
 
-    "github.com/Tomilla/imagespider/config"
+    "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/fetcher"
 )
 
@@ -47,7 +47,7 @@ func (w *Worker) work(s Scheduler, out chan *ParseResult) {
 
         ParseResult := r.Parser(body, url)
         if ParseResult != nil {
-            config.L.Infof("New Parser: %v", url)
+            common.L.Infof("New Parser: %v", url)
             out <- ParseResult
         }
 
