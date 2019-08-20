@@ -102,7 +102,7 @@ func (p PostRequest) Archiver(contents []byte, url string) bool {
         return false
     }
     err = ioutil.WriteFile(
-        path.Join(logPath, strings.Trim(postPathRe.ReplaceAllString(u.Path, "_"), "_")),
+        path.Join(logPath, NormalizePostUrl(u.Path, true)),
         contents,
         0664)
     if err != nil {

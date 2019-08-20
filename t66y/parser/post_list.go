@@ -13,6 +13,7 @@ import (
 
     "github.com/PuerkitoBio/goquery"
     "github.com/corpix/uarand"
+    "github.com/go-redis/redis"
 
     "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
@@ -43,6 +44,7 @@ func (p PostListRequest) GetPost() *engine.Post {
 }
 
 func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult {
+
     if !p.Archiver(contents, url) {
         common.L.Infof("Cannot archive content of %v", url)
     }
@@ -95,6 +97,11 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
                     } else {
                         return // ignore invalid url
                     }
+                }
+
+                r := common.Redis.Get(NormalizePostUrl(post.Path, false))
+                if r.Err() != redis.Nil && r.String() != "failed" {
+                    return
                 }
 
                 _title := aTag.Text()
@@ -155,6 +162,7 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
         // fmt.Println(pTitle)
         fmt.Println(post)
         result.Items = append(result.Items, "topic: "+post.Title)
+        common.Redis.Set(NormalizePostUrl(post.Path, false), "added", 0)
         result.Requests = append(result.Requests, &PostRequest{
             URL:   HOSTNAME + post.Path,
             Agent: uarand.GetRandom(),
@@ -192,7 +200,7 @@ func (p PostListRequest) Archiver(contents []byte, url string) bool {
 
     finalPath := strings.ToLower(uBase + "_" + u.RawQuery + uExt)
     err = ioutil.WriteFile(
-        path.Join(logPath, strings.Trim(postPathRe.ReplaceAllString(finalPath, "_"), "_")),
+        path.Join(logPath, NormalizePostUrl(finalPath, true)),
         contents,
         0664)
     if err != nil {

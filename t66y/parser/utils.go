@@ -2,6 +2,9 @@ package parser
 
 import (
     "bytes"
+    netUrl "net/url"
+    "os"
+    "path/filepath"
     "strings"
 
     "github.com/PuerkitoBio/goquery"
@@ -87,4 +90,52 @@ func ExtractImageUrls(content interface{}, matches chan string) {
     close(matches)
 }
 
+func RemoveExt(p string) string {
+    for i := len(p) - 1; i >= 0 && p[i] != '/'; i-- {
+        if p[i] == '.' {
+            return p[:i]
+        }
+    }
+    return p
+}
 
+// Notice: the htm_data(for web) or htm_mob(for mobile) will
+// move the above prefix and replace '\' with "_"
+// if includeExt is false, the extension name will be removed
+// for example: htm_data/1980/16/2401237.html -> 1980_16_2401237
+func NormalizePostUrl(url string, includeExt bool) string {
+    var _path string
+    if strings.HasPrefix(url, "/") {
+        _path = url
+    } else {
+        u, err := netUrl.Parse(url)
+        if err != nil {
+            return url
+        }
+        _path = u.Path
+    }
+    if !includeExt {
+        _path = RemoveExt(_path)
+    }
+
+    return strings.Trim(postPathRe.ReplaceAllString(_path, "_"), "_")
+}
+
+func GetLocalArchivedPosts(_path string) error {
+    err := filepath.Walk(_path, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if info.IsDir() {
+            return filepath.SkipDir
+        }
+        fileName := info.Name()
+        postArchiveRe.MatchString(fileName)
+
+        return nil
+    })
+    if err != nil {
+        return err
+    }
+    return nil
+}

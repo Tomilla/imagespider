@@ -55,3 +55,65 @@ func TestCleanPathRe(t *testing.T) {
         assert.Equal(t, dest, replaced)
     }
 }
+
+func TestRemoveExt(t *testing.T) {
+    var (
+        sourceAndExpected = [][]string{
+            // test with normal path
+            {"3604380.html", "3604380"},
+            {"47920dx8.txt", "47920dx8"},
+            {"resource.pnp", "resource"},
+            // test without ext
+            {"2462137", "2462137"},
+            {"27492734/as0547612kjas", "27492734/as0547612kjas"},
+            {"scsdajfrklq2efsd", "scsdajfrklq2efsd"},
+            {"f274asdfjklasj4", "f274asdfjklasj4"},
+            // test empty
+            {"", ""},
+            // test with fake ext
+            {"248924.php/2462137.html", "248924.php/2462137"},
+            {"248924.php/224298234", "248924.php/224298234"},
+        }
+    )
+    for _, info := range sourceAndExpected {
+        path, excepted := info[0], info[1]
+        assert.Equal(t, RemoveExt(path), excepted)
+    }
+}
+
+func TestNormalizePostUrl(t *testing.T) {
+    type TestInfo struct {
+        path       string
+        includeExt bool
+        excepted   string
+    }
+
+    var (
+        sourceAndExpected = []*TestInfo{
+            // test with normal path
+            {"/htm_data/1908/16/3604380.html", true, "1908_16_3604380.html"},
+            // test without ext
+            {"/htm_data/1908/16/2462137.html", false, "1908_16_2462137"},
+            // test alphabet letter
+            {"http://1024cl.pw/htm_data/abcd/7ef/ghijk.html", false, "abcd_7ef_ghijk"},
+            // test html_data
+            {"http://1024cl.pw/html_data/abcd/ef/ghijk.html", false, "abcd_ef_ghijk"},
+            // test neither htm(l)_data or htm(l)_mob
+            {"https://example.com/mobile/abcd/ef/ghijk.html", true, "mobile_abcd_ef_ghijk.html"},
+            // test htm_mob
+            {"https://example.com/htm_mob/abcd/ef/ghijk.html", true, "abcd_ef_ghijk.html"},
+            // test socks5 protocol
+            {"socks5://example.com/mobile/abcd/ef/ghijk.html", true, "mobile_abcd_ef_ghijk.html"},
+            // test wss protocol
+            {"wss://example.com/htm_mob/abcd/ef/ghijk", false, "abcd_ef_ghijk"},
+            {"wss://example.com/htm_mob/abcd/ef/ghijk", true, "abcd_ef_ghijk"},
+            {"wss://example.com/abcd/ef/ghijk", true, "abcd_ef_ghijk"},
+            {"abcd/ef/ghijk", true, "abcd_ef_ghijk"},
+        }
+    )
+    for _, info := range sourceAndExpected {
+        result := NormalizePostUrl(info.path, info.includeExt)
+        assert.Equal(t, info.excepted, result)
+    }
+
+}
