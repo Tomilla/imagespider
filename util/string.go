@@ -11,19 +11,34 @@ var (
     Find       = StringInSlice
 )
 
-// https://github.com/DaddyOh/golang-samples/blob/master/pad.go
+func _padInner(isLeftPad bool, s string, padStr string, width int) (ret string) {
+    padUnit := len(padStr)
+    if padUnit == 0 {
+        return s
+    }
+    gap := width - len(padStr)
+    if gap <= 0 {
+        return s
+    }
+    padCount := 1 + (gap / padUnit)
+    if isLeftPad {
+        ret = strings.Repeat(padStr, padCount) + s
+        return ret[(len(ret) - width):]
+    } else {
+        ret = s + strings.Repeat(padStr, padCount)
+        return ret[:width]
+    }
+}
+
+// fork from https://github.com/DaddyOh/golang-samples/blob/master/pad.go
 // RightPad2Len
 func RightPad2Len(s string, padStr string, width int) string {
-    var padCountInt = 1 + ((width - len(padStr)) / len(padStr))
-    var retStr = s + strings.Repeat(padStr, padCountInt)
-    return retStr[:width]
+    return _padInner(false, s, padStr, width)
 }
 
 // LeftPad2Len
 func LeftPad2Len(s string, padStr string, width int) string {
-    var padCountInt = 1 + ((width - len(padStr)) / len(padStr))
-    var retStr = strings.Repeat(padStr, padCountInt) + s
-    return retStr[(len(retStr) - width):]
+    return _padInner(true, s, padStr, width)
 }
 
 // StringInSlice
@@ -61,8 +76,8 @@ func getCorrectRegexObj(regEx interface{}) (compRegEx *regexp.Regexp) {
 }
 
 /**
- * Parses string with the given regular expression and returns the
- * group values defined in the expression.
+ * Parses string with the given regular expression and
+ * returns the group values defined in the expression.
  */
 func GetRegexNamedGroupMapping(regEx interface{}, txt string) (paramsMap map[string]string) {
     var (

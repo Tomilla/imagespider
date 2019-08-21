@@ -72,3 +72,53 @@ func TestGetRegexNamedGroupMapping(t *testing.T) {
         assert.Equal(t, reflect.DeepEqual(result, excepted), true)
     }
 }
+
+func TestLeftPad2Len(t *testing.T) {
+    type TestInfo struct {
+        s        string
+        p        string
+        w        int
+        excepted string
+    }
+    var (
+        sourceAndExcepted = []TestInfo{
+            {"1", "0", 10, "0000000001"},
+            {"5", "0", 5, "00005"},
+            {"5", " ", 5, "    5"},
+            // empty pad string
+            {"05", "", 5, "05"},
+            // illegal value: width, return original string
+            {"005", " ", -1, "005"},
+            {"005", " ", 0, "005"},
+        }
+    )
+    for _, info := range sourceAndExcepted {
+        assert.Equal(t, LeftPad2Len(info.s, info.p, info.w), info.excepted)
+    }
+}
+
+func TestRightPad2Len(t *testing.T) {
+    type TestInfo struct {
+        s        string
+        p        string
+        w        int
+        excepted string
+    }
+    var (
+        sourceAndExcepted = []TestInfo{
+            {"1", "0", 10, "1000000000"},
+            {"5", "0", 5, "50000"},
+            {"5.", "3", 5, "5.333"},
+            {"5", " ", 5, "5    "},
+            // empty pad string
+            {"05", "", 5, "05"},
+            // illegal value: width, return original string
+            {"005", " ", -1, "005"},
+            {"005", " ", 0, "005"},
+        }
+    )
+    for _, info := range sourceAndExcepted {
+        assert.Equal(t, RightPad2Len(info.s, info.p, info.w), info.excepted)
+    }
+
+}
