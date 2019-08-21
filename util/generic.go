@@ -3,8 +3,6 @@ package util
 import (
     "fmt"
     "reflect"
-
-    "github.com/Tomilla/imagespider/common"
 )
 
 func EqualSliceGeneric(lhs interface{}, rhs interface{}) (isEqual bool) {
@@ -100,6 +98,6 @@ func EqualSliceGeneric(lhs interface{}, rhs interface{}) (isEqual bool) {
         ch <- true
     }()
     isEqual = <-ch
-    common.L.Infof("isEqual: %v", isEqual)
+    // common.L.Infof("isEqual: %v", isEqual)
     return
 }

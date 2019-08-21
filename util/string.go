@@ -99,5 +99,5 @@ func GetRegexGroupArray(regEx interface{}, txt string) (paramsArray []string) {
     if len(paramsArray) > 1 {
         return paramsArray[1:]
     }
-    return
+    return []string{}
 }

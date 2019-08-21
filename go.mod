@@ -10,7 +10,7 @@ require (
 	github.com/go-redis/redis v6.15.3+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.2 // indirect
-	github.com/google/go-cmp v0.3.1 // indirect
+	github.com/google/go-cmp v0.3.1
 	github.com/google/uuid v1.1.1
 	github.com/keakon/golog v0.0.0-20181207173043-088d263180de
 	github.com/stretchr/testify v1.3.0
