@@ -3,6 +3,7 @@ package image
 import (
     "fmt"
     "log"
+    "os"
     "sync/atomic"
     "time"
 
@@ -34,7 +35,6 @@ func (s *scheduler) schedule() {
         }
 
         select {
-
         case w := <-s.workChan:
             workQ = append(workQ, w)
         case r := <-s.readyChan:
@@ -42,13 +42,17 @@ func (s *scheduler) schedule() {
         case activeWorker <- activeWork:
             readyQ = readyQ[1:]
             workQ = workQ[1:]
-
         case <-ticker1:
             v := atomic.LoadInt32(&count)
             if !atomic.CompareAndSwapInt32(&preCount, v, v) {
                 preCount = v
                 log.Printf("[Downloader worker] #%d downloaded [workQ len %d cap %d], [readyQ len %d cap %d]\n",
                     v, len(workQ), cap(workQ), len(readyQ), cap(readyQ))
+
+                if len(workQ) == 0 && (len(readyQ) == s.workerCount || len(readyQ) == 0) {
+                    fmt.Println("[All End]")
+                    common.EndChan <- os.Kill
+                }
             }
         case <-ticker2:
             // 如果任务为空了， 则请求添加任务

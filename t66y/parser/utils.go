@@ -2,14 +2,19 @@ package parser
 
 import (
     "bytes"
+    "fmt"
     netUrl "net/url"
     "os"
+    "path"
     "path/filepath"
+    "strconv"
     "strings"
 
     "github.com/PuerkitoBio/goquery"
 
     "github.com/Tomilla/imagespider/common"
+    "github.com/Tomilla/imagespider/engine"
+    "github.com/Tomilla/imagespider/glog"
     "github.com/Tomilla/imagespider/util"
 )
 
@@ -126,6 +131,37 @@ func SimplifyPostUrl(url string) string {
     return NormalizePostUrl(url, false)
 }
 
+func SyncRedisAndLocalDatum(attr map[string]string, p engine.Post) bool {
+    // attr from redis
+    attrCntReply, ok := attr[common.TopicEnum.CountReply]
+    if !ok {
+        return false
+    }
+    title, ok := attr[common.TopicEnum.Name]
+    if !ok {
+        return false
+    }
+    cntReply, err := strconv.Atoi(attrCntReply)
+    if err != nil {
+        return false
+    }
+
+    if cntReply < p.CountReply {
+        dirNameOld := fmt.Sprintf(FileNameFormat, cntReply, p.CountImage, NormalizeName(title))
+        dirNameNew := fmt.Sprintf(FileNameFormat, p.CountReply, p.CountImage, NormalizeName(p.Title))
+        src := path.Join(BaseDir, dirNameOld)
+        dest := path.Join(BaseDir, dirNameNew)
+        if glog.CheckPathExists(src) {
+            err = os.Rename(src, dest)
+            common.L.Infof("[Rename]: from %v to %v", src, dest)
+            if err != nil {
+                return false
+            }
+        }
+    }
+    return true
+}
+
 func GetLocalArchivedPosts(_path string) error {
     err := filepath.Walk(_path, func(path string, info os.FileInfo, err error) error {
         if err != nil {
@@ -138,7 +174,7 @@ func GetLocalArchivedPosts(_path string) error {
         common.L.Info(fileName)
         name, ok := util.GetRegexNamedGroupMapping(postArchiveRe, fileName)["Name"]
         if ok {
-            common.Redis.HSet(name, common.TopicEnum.Status, common.PostDone)
+            common.Redis.HSet(name, common.TopicEnum.Status, common.PostDone.Ordinal())
         }
         return nil
     })

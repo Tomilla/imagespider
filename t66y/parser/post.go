@@ -41,13 +41,26 @@ func (p PostRequest) GetPost() *engine.Post {
     return p.Post
 }
 
-func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
+func (p *PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     if !p.Archiver(contents, url) {
         common.L.Infof("Cannot archive content of :", url)
     }
+    dirName := fmt.Sprintf(FileNameFormat, p.Post.CountReply, p.Post.CountImage, NormalizeName(p.Post.Title))
+    fullPath := path.Join(BaseDir, dirName)
+    if glog.CheckPathExists(fullPath) {
+        files, err := ioutil.ReadDir(fullPath)
+        if err != nil {
+            return nil
+        }
+        if len(files) >= p.Post.CountImage {
+            common.Redis.HSet(SimplifyPostUrl(url), common.TopicEnum.Status, common.PostDone.Ordinal())
+            return nil
+        }
+    }
+
     doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
     if err != nil {
-        common.Redis.HSet(SimplifyPostUrl(url), common.TopicEnum.Status, common.PostContentFailParsed)
+        common.Redis.HSet(SimplifyPostUrl(url), common.TopicEnum.Status, common.PostContentFailParsed.Ordinal())
         return nil
     }
     node := doc.Find(".tpc_content.do_not_catch").ParentsUntil("table")
@@ -83,8 +96,7 @@ func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     common.Redis.HSet(key, common.TopicEnum.Url, t.Url)
     common.Redis.HSet(key, common.TopicEnum.Name, t.Name)
 
-    _name := p.Post.Title
-    t.Name = fmt.Sprintf(FILE_NAME_FORMAT, t.CountReply, t.CountImage, NormalizeName(_name))
+    t.Name = fmt.Sprintf(FileNameFormat, t.CountReply, t.CountImage, NormalizeName(p.Post.Title))
     t.Url = url
 
     for m := range matches {
@@ -94,11 +106,11 @@ func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     }
     // the post is still alive
     if len(t.Images) >= t.CountImage {
-        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgAllParsed)
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgAllParsed.Ordinal())
     } else if len(t.Images) > 0 {
-        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartParsed)
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartParsed.Ordinal())
     } else {
-        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailParsed)
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailParsed.Ordinal())
     }
     return &engine.ParseResult{Items: []interface{}{t}}
 }

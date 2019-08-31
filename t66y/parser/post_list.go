@@ -13,7 +13,6 @@ import (
 
     "github.com/PuerkitoBio/goquery"
     "github.com/corpix/uarand"
-    "github.com/go-redis/redis"
 
     "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
@@ -79,7 +78,11 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
         if db != nil {
             // do something
         }
-        var post = engine.Post{}
+        var (
+            post = engine.Post{}
+            attr map[string]string
+            key  string
+        )
 
         for i, node := range allTd.Nodes {
             doc := goquery.NewDocumentFromNode(node)
@@ -99,16 +102,18 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
                     }
                 }
 
-
                 _title := aTag.Text()
                 post.Title = _title
                 postColor, exist = aTag.Find("font").Attr("color")
 
-                r := common.Redis.HGet(SimplifyPostUrl(post.Path), common.TopicEnum.Status)
-                _status := common.PostImgAllDownloaded
-                if r.Err() != redis.Nil && r.String() == _status.String() {
-                    common.L.Infof("Ignore Saved Post: %v %v\n", post.Title, postColor)
-                    return
+                key = SimplifyPostUrl(post.Path)
+                r := common.Redis.HGetAll(key)
+                attr = r.Val()
+                if _status, ok := attr[common.TopicEnum.Status]; ok {
+                    if FinishPostStatus.Has(_status) {
+                        common.L.Infof("Ignore Saved Post: %v %v\n", post.Title, postColor)
+                        return
+                    }
                 }
 
                 if exist && ignoredPostColor.Has(postColor) {
@@ -147,6 +152,28 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
                     return
                 }
                 post.CountReply = _replyCountInt
+
+                if len(attr) > 0 {
+                    imgCnt, err := strconv.Atoi(attr[common.TopicEnum.CountImage])
+                    if err != nil {
+                        continue
+                    }
+                    imgDCnt, err := strconv.Atoi(attr[common.TopicEnum.CountDownloadedImage])
+                    if err != nil {
+                        continue
+                    }
+                    if imgDCnt >= imgCnt {
+                        SyncRedisAndLocalDatum(attr, post)
+                        common.Redis.HMSet(key, map[string]interface{}{
+                            common.TopicEnum.Status:     common.PostImgAllDownloaded.Ordinal(),
+                            common.TopicEnum.CountReply: post.CountReply,
+                        })
+                        common.L.Infof("Ignore Saved Post: %v %v\n", post.Title, postColor)
+                        return
+                    } else {
+                        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded.Ordinal())
+                    }
+                }
             case 4:
                 _lastReplyAt := strings.Trim(doc.Find("a").Text(), util.WhiteSpace)
                 post.LastReplyAt, err = time.Parse(util.DateTimeLayout, _lastReplyAt)

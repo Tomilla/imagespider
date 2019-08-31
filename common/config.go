@@ -28,6 +28,7 @@ var (
     L         *glog.Logger
     TopicEnum *model.TopicPersist
     BaseDir   string
+    EndChan   chan os.Signal
 )
 
 const NilParser = "NilParser"
@@ -360,4 +361,5 @@ func init() {
         Url:                  "url",
         FailedImages:         "urlFailedImages",
     }
+    EndChan = make(chan os.Signal, 1)
 }

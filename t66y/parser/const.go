@@ -5,6 +5,7 @@ import (
     "regexp"
 
     "github.com/Tomilla/imagespider/collections/set"
+    "github.com/Tomilla/imagespider/common"
 )
 
 // from post_list
@@ -14,6 +15,8 @@ var (
     ignoredPostColor = set.New("red", "blue", "orange")
     includePostColor = set.New("green")
     ValidWebPageExt  = set.New("html", "htm")
+    FinishPostStatus = set.New(common.PostImgAllDownloaded.String(), common.PostDone.String())
+    BaseDir          = common.C.GetImageConfig().Path
 )
 
 // from post
@@ -42,5 +45,5 @@ var (
 const (
     HOSTNAME          = "http://t66y.com/"
     DefaultWebPageExt = ".html"
-    FILE_NAME_FORMAT  = "[%03vR][%03vP]%v" // reply, picture_count, and title
+    FileNameFormat    = "[%03vR][%03vP]%v" // reply, picture_count, and title
 )

@@ -95,7 +95,7 @@ func (w *worker) downloadWithPath(key, link, fileName string) error {
     resp, err := client.Do(req)
 
     if err != nil {
-        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailDownloaded)
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailDownloaded.Ordinal())
         rememberFailedImageFunc()
         return err
     }
@@ -110,24 +110,12 @@ func (w *worker) downloadWithPath(key, link, fileName string) error {
 
     _, err = io.Copy(newFile, buf)
     if err != nil {
-        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded)
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded.Ordinal())
         rememberFailedImageFunc()
         util.WarnErr(err)
     } else {
         common.Redis.HIncrBy(key, common.TopicEnum.CountDownloadedImage, 1)
-        imgCnt, err := common.Redis.HGet(key, common.TopicEnum.CountImage).Int()
-        if err != nil {
-            return nil
-        }
-        imgDCount, err := common.Redis.HGet(key, common.TopicEnum.CountDownloadedImage).Int()
-        if err != nil {
-            return nil
-        }
-        if imgDCount >= imgCnt {
-            common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgAllDownloaded)
-        } else {
-            common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded)
-        }
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded.Ordinal())
         if common.C.GetShowDownloadProgress() {
             common.L.Infof("Image Downloaded: %v/%v\n%v\n", path.Base(path.Dir(fileName)), path.Base(fileName), link)
         }

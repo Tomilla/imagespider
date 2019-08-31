@@ -22,9 +22,9 @@ func NewConcurrentEngine(imageChan chan model.Topic) *ConcurrentEngine {
 func (e *ConcurrentEngine) Shutdown() {
     close(e.ImageChan) // 不继续发送图片下载
     e.s.Shutdown()
+    common.L.Info("Shutdown")
     // e.ElasticChan.Stop() // stop elasticSearch client
     time.Sleep(100 * time.Millisecond)
-
 }
 func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {
 
@@ -59,6 +59,7 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {
         }
     }()
 
+Loop:
     for {
         select {
         case result := <-out: // 页面解析结果
@@ -67,9 +68,10 @@ func (e *ConcurrentEngine) Run(s Scheduler, requestChan chan BaseParser) {
             }
 
             e.dealItems(result.Items)
+        case <-common.EndChan:
+            break Loop
         }
     }
-
 }
 
 // deal all items that need not fetch again
