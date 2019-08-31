@@ -12,9 +12,9 @@ import (
     "github.com/PuerkitoBio/goquery"
 
     "github.com/Tomilla/imagespider/common"
+    "github.com/Tomilla/imagespider/common/model"
     "github.com/Tomilla/imagespider/engine"
     "github.com/Tomilla/imagespider/glog"
-    "github.com/Tomilla/imagespider/model"
     "github.com/Tomilla/imagespider/util"
 )
 
@@ -47,6 +47,7 @@ func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     }
     doc, err := goquery.NewDocumentFromReader(bytes.NewReader(contents))
     if err != nil {
+        common.Redis.HSet(SimplifyPostUrl(url), common.TopicEnum.Status, common.PostContentFailParsed)
         return nil
     }
     node := doc.Find(".tpc_content.do_not_catch").ParentsUntil("table")
@@ -71,17 +72,33 @@ func (p PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     // }
 
     t := model.Topic{}
+    key := SimplifyPostUrl(url)
+    t.Url = url
+    t.Name = p.Post.Title
     t.CountImage = p.Post.CountImage
     t.CountReply = p.Post.CountReply
+    t.Key = key
+    common.Redis.HSet(key, common.TopicEnum.CountImage, t.CountImage)
+    common.Redis.HSet(key, common.TopicEnum.CountReply, t.CountReply)
+    common.Redis.HSet(key, common.TopicEnum.Url, t.Url)
+    common.Redis.HSet(key, common.TopicEnum.Name, t.Name)
 
     _name := p.Post.Title
-    t.Name = fmt.Sprintf("[%03v][%03v]%v", t.CountReply, t.CountImage, NormalizeName(_name))
+    t.Name = fmt.Sprintf(FILE_NAME_FORMAT, t.CountReply, t.CountImage, NormalizeName(_name))
     t.Url = url
 
     for m := range matches {
-        if !isDup(m) {
+        if !isInvalid(m) {
             t.Images = append(t.Images, m)
         }
+    }
+    // the post is still alive
+    if len(t.Images) >= t.CountImage {
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgAllParsed)
+    } else if len(t.Images) > 0 {
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartParsed)
+    } else {
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailParsed)
     }
     return &engine.ParseResult{Items: []interface{}{t}}
 }
@@ -113,7 +130,7 @@ func (p PostRequest) Archiver(contents []byte, url string) bool {
 }
 
 // delete duplicates
-func isDup(s string) bool {
+func isInvalid(s string) bool {
     result := false
     switch {
     // exclude non-image

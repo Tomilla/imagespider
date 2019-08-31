@@ -2,6 +2,7 @@ package image
 
 import (
     "bufio"
+    "encoding/json"
     "io"
     "log"
     "net/http"
@@ -16,12 +17,13 @@ import (
 )
 
 type work struct {
+    key      string
     url      string
     fileName string
 }
 
-func newWork(url string, fileName string) work {
-    return work{url: url, fileName: fileName}
+func newWork(key string, url string, fileName string) work {
+    return work{key: key, url: url, fileName: fileName}
 }
 
 type worker struct {
@@ -52,14 +54,13 @@ func (w *worker) work() {
         w.Download(task)
         util.SleepRandomDuration(common.C.GetSleepRange())
         w.s.Ready(workChan)
-
     }
 
 }
 
 func (w *worker) Download(task work) {
 
-    err := w.downloadWithPath(task.url, task.fileName)
+    err := w.downloadWithPath(task.key, task.url, task.fileName)
     if err != nil {
         log.Println("####### Error download ", err, task.url)
         util.WarnErr(os.Remove(task.fileName)) // 下载失败 删除文件
@@ -67,12 +68,20 @@ func (w *worker) Download(task work) {
     }
 
     atomic.AddInt32(&count, 1)
-
     // log.Printf("#%d downloaded %s", count, task.fileName)
-
 }
 
-func (w *worker) downloadWithPath(link, fileName string) error {
+func (w *worker) downloadWithPath(key, link, fileName string) error {
+    var rememberFailedImageFunc = func() {
+        encoded, err := json.Marshal(map[string]string{
+            "link": link,
+            "dir":  fileName,
+        })
+        if err != nil {
+            return
+        }
+        common.Redis.LPush(key+"_failed", encoded)
+    }
 
     if glog.CheckPathExists(fileName) {
         return nil
@@ -86,6 +95,8 @@ func (w *worker) downloadWithPath(link, fileName string) error {
     resp, err := client.Do(req)
 
     if err != nil {
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgFailDownloaded)
+        rememberFailedImageFunc()
         return err
     }
     defer func() {
@@ -99,8 +110,24 @@ func (w *worker) downloadWithPath(link, fileName string) error {
 
     _, err = io.Copy(newFile, buf)
     if err != nil {
+        common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded)
+        rememberFailedImageFunc()
         util.WarnErr(err)
     } else {
+        common.Redis.HIncrBy(key, common.TopicEnum.CountDownloadedImage, 1)
+        imgCnt, err := common.Redis.HGet(key, common.TopicEnum.CountImage).Int()
+        if err != nil {
+            return nil
+        }
+        imgDCount, err := common.Redis.HGet(key, common.TopicEnum.CountDownloadedImage).Int()
+        if err != nil {
+            return nil
+        }
+        if imgDCount >= imgCnt {
+            common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgAllDownloaded)
+        } else {
+            common.Redis.HSet(key, common.TopicEnum.Status, common.PostImgPartDownloaded)
+        }
         if common.C.GetShowDownloadProgress() {
             common.L.Infof("Image Downloaded: %v/%v\n%v\n", path.Base(path.Dir(fileName)), path.Base(fileName), link)
         }

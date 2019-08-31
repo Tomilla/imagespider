@@ -2,7 +2,7 @@ package image
 
 import (
     "github.com/Tomilla/imagespider/common"
-    "github.com/Tomilla/imagespider/model"
+    "github.com/Tomilla/imagespider/common/model"
 )
 
 var count int32

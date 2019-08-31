@@ -6,7 +6,7 @@ import (
     "time"
 
     "github.com/Tomilla/imagespider/common"
-    "github.com/Tomilla/imagespider/model"
+    "github.com/Tomilla/imagespider/common/model"
 )
 
 type ConcurrentEngine struct {

@@ -57,7 +57,7 @@ func (d *downloader) Run() {
 
         for i, url := range topic.Images { // pass to worker
             fileName := d.GetFileName(baseFolder, topic.Name, url, i)
-            w := newWork(url, fileName)
+            w := newWork(topic.Key, url, fileName)
             workChan <- w
         }
 

@@ -10,6 +10,7 @@ import (
     "github.com/PuerkitoBio/goquery"
 
     "github.com/Tomilla/imagespider/common"
+    "github.com/Tomilla/imagespider/util"
 )
 
 func NormalizeName(s string) string {
@@ -121,21 +122,33 @@ func NormalizePostUrl(url string, includeExt bool) string {
     return strings.Trim(postPathRe.ReplaceAllString(_path, "_"), "_")
 }
 
+func SimplifyPostUrl(url string) string {
+    return NormalizePostUrl(url, false)
+}
+
 func GetLocalArchivedPosts(_path string) error {
     err := filepath.Walk(_path, func(path string, info os.FileInfo, err error) error {
         if err != nil {
             return err
         }
         if info.IsDir() {
-            return filepath.SkipDir
+            return nil
         }
         fileName := info.Name()
-        postArchiveRe.MatchString(fileName)
-
+        common.L.Info(fileName)
+        name, ok := util.GetRegexNamedGroupMapping(postArchiveRe, fileName)["Name"]
+        if ok {
+            common.Redis.HSet(name, common.TopicEnum.Status, common.PostDone)
+        }
         return nil
     })
     if err != nil {
         return err
     }
     return nil
+}
+
+func init() {
+    // err := GetLocalArchivedPosts(common.C.GetLogPath())
+    // common.L.Info(err)
 }

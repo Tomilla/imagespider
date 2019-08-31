@@ -1,6 +1,6 @@
 package common
 
-import "github.com/Tomilla/imagespider/model"
+import "github.com/Tomilla/imagespider/common/model"
 
 type ImageConfig struct {
     Path        string `json:"path"` // 路径

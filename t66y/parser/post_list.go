@@ -99,16 +99,20 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
                     }
                 }
 
-                r := common.Redis.Get(NormalizePostUrl(post.Path, false))
-                if r.Err() != redis.Nil && r.String() != "failed" {
-                    return
-                }
 
                 _title := aTag.Text()
                 post.Title = _title
                 postColor, exist = aTag.Find("font").Attr("color")
+
+                r := common.Redis.HGet(SimplifyPostUrl(post.Path), common.TopicEnum.Status)
+                _status := common.PostImgAllDownloaded
+                if r.Err() != redis.Nil && r.String() == _status.String() {
+                    common.L.Infof("Ignore Saved Post: %v %v\n", post.Title, postColor)
+                    return
+                }
+
                 if exist && ignoredPostColor.Has(postColor) {
-                    fmt.Printf("Ignore Admin Post: %v %v\n", post.Title, postColor)
+                    common.L.Infof("Ignore Admin Post: %v %v\n", post.Title, postColor)
                     return
                 }
 
@@ -160,9 +164,9 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
         }
 
         // fmt.Println(pTitle)
-        fmt.Println(post)
+        // fmt.Println(post)
         result.Items = append(result.Items, "topic: "+post.Title)
-        common.Redis.Set(NormalizePostUrl(post.Path, false), "added", 0)
+        common.Redis.HSet(SimplifyPostUrl(post.Path), common.TopicEnum.Status, common.PostAdded)
         result.Requests = append(result.Requests, &PostRequest{
             URL:   HOSTNAME + post.Path,
             Agent: uarand.GetRandom(),

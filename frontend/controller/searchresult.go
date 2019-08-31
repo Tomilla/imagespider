@@ -10,9 +10,9 @@ import (
 
     elastic "github.com/elastic/go-elasticsearch/v7"
 
+    mo "github.com/Tomilla/imagespider/common/model"
     "github.com/Tomilla/imagespider/frontend/model"
     "github.com/Tomilla/imagespider/frontend/view"
-    mo "github.com/Tomilla/imagespider/model"
     "github.com/Tomilla/imagespider/persist/elasticsearch"
 )
 

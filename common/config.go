@@ -17,16 +17,17 @@ import (
 
     "github.com/go-redis/redis"
 
+    "github.com/Tomilla/imagespider/common/model"
     "github.com/Tomilla/imagespider/glog"
-    "github.com/Tomilla/imagespider/model"
 )
 
 var (
-    C       *Config
-    DB      *sql.DB
-    Redis   *redis.Client
-    L       *glog.Logger
-    BaseDir string
+    C         *Config
+    DB        *sql.DB
+    Redis     *redis.Client
+    L         *glog.Logger
+    TopicEnum *model.TopicPersist
+    BaseDir   string
 )
 
 const NilParser = "NilParser"
@@ -43,6 +44,55 @@ type Config struct {
     MameLenLimit int         `json:"nameLenLimit"`
     Engine       Engine      `json:"engine"`
     Elastic      Elastic
+}
+
+type PostStatusType uint
+
+const (
+    PostAdded PostStatusType = iota
+    PostContentFailParsed
+    PostImgFailParsed
+    PostImgPartParsed
+    PostImgAllParsed
+    PostImgFailDownloaded
+    PostImgPartDownloaded
+    PostImgAllDownloaded
+    PostDone
+)
+
+var postStatusStrings = []string{
+    "Post was added",
+    "The content of post failed to parse",
+    "The images within post failed to parse",
+    "Some images within post failed to parse",
+    "All images within post have been parsed",
+    "The images within post failed to download",
+    "Some images within post failed to download",
+    "All images within post have been downloaded",
+    "Post Persist was Done",
+}
+
+type PostEnum interface {
+    Name() string
+    Ordinal() int
+    String() string
+    Values() *[]string
+}
+
+func (pst PostStatusType) Name() string {
+    return postStatusStrings[pst]
+}
+
+func (pst PostStatusType) String() string {
+    return string(pst)
+}
+
+func (pst PostStatusType) Ordinal() int {
+    return int(pst)
+}
+
+func (pst PostStatusType) Values() *[]string {
+    return &postStatusStrings
 }
 
 type InRange struct {
@@ -300,4 +350,14 @@ func init() {
 
     L = glog.NewStdoutLogger()
     Redis = C.NewRedisClient()
+    TopicEnum = &model.TopicPersist{
+        CountReply:           "cntReply",
+        CountImage:           "cntImage",
+        CountDownloadedImage: "cntImgDL",
+        Status:               "status",
+        Name:                 "name",
+        Key:                  "key",
+        Url:                  "url",
+        FailedImages:         "urlFailedImages",
+    }
 }

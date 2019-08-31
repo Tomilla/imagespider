@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-    "log"
     "sync/atomic"
     "time"
 
@@ -58,12 +57,12 @@ func (s *Scheduler) Schedule(hungry chan bool) {
                     ch := common.C.GetImageHungryChan()
                     if ch == nil {
                         hungry <- true
-                        time.Sleep(30 * time.Millisecond)
+                        time.Sleep(3)
                     } else {
                         select {
                         case <-ch:
                             hungry <- true
-                            time.Sleep(30 * time.Millisecond)
+                            time.Sleep(3)
                         default:
                         }
                     }
@@ -72,7 +71,7 @@ func (s *Scheduler) Schedule(hungry chan bool) {
                 v := atomic.LoadInt32(&count)
                 if !atomic.CompareAndSwapInt32(&preCount, v, v) {
                     preCount = v
-                    log.Printf("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
+                    common.L.Infof("[scheduler][requestQ len %d, cap %d], [workQ len %d, cap %d]\n",
                         len(requestQ), cap(requestQ), len(workQ), cap(workQ))
                 }
             }

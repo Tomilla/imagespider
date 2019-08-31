@@ -42,4 +42,5 @@ var (
 const (
     HOSTNAME          = "http://t66y.com/"
     DefaultWebPageExt = ".html"
+    FILE_NAME_FORMAT  = "[%03vR][%03vP]%v" // reply, picture_count, and title
 )

@@ -12,6 +12,9 @@ import (
     "github.com/Tomilla/imagespider/scheduler"
 
     "github.com/Tomilla/imagespider/engine"
+
+    // for image init
+    _ "github.com/Tomilla/imagespider/persist/image"
 )
 
 func main() {
