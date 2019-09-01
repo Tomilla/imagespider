@@ -45,9 +45,19 @@ func (p *PostRequest) Parser(contents []byte, url string) *engine.ParseResult {
     if !p.Archiver(contents, url) {
         common.L.Infof("Cannot archive content of :", url)
     }
-    dirName := fmt.Sprintf(FileNameFormat, p.Post.CountReply, p.Post.CountImage, NormalizeName(p.Post.Title))
-    fullPath := path.Join(BaseDir, dirName)
-    if glog.CheckPathExists(fullPath) {
+    normalTitle := NormalizeName(p.Post.Title)
+    // dirName := fmt.Sprintf(FileNameFormat, p.Post.CountReply, p.Post.CountImage, normalTitle)
+    dirName, ok := common.LocalSaved[normalTitle]
+    fullPath := path.Join(ImageDir, dirName)
+    if ok && glog.CheckPathExists(fullPath) {
+        dirNameNew := fmt.Sprintf(FileNameFormat, p.Post.CountReply, p.Post.CountImage, normalTitle)
+        if dirNameNew != dirName {
+            err := os.Rename(fullPath, path.Join(ImageDir, dirNameNew))
+            if err != nil {
+                common.L.Error("Rename Failed")
+            }
+            return nil
+        }
         files, err := ioutil.ReadDir(fullPath)
         if err != nil {
             return nil

@@ -5,6 +5,7 @@ import (
 
     "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/fetcher"
+    "github.com/Tomilla/imagespider/util"
 )
 
 type Worker struct {
@@ -46,6 +47,7 @@ func (w *Worker) work(s Scheduler, out chan *ParseResult) {
         }
 
         ParseResult := r.Parser(body, url)
+        util.SleepRandomDuration(common.C.GetSleepRange())
         if ParseResult != nil {
             common.L.Infof("New Parser: %v", url)
             out <- ParseResult

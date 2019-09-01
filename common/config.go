@@ -22,13 +22,14 @@ import (
 )
 
 var (
-    C         *Config
-    DB        *sql.DB
-    Redis     *redis.Client
-    L         *glog.Logger
-    TopicEnum *model.TopicPersist
-    BaseDir   string
-    EndChan   chan os.Signal
+    C          *Config
+    DB         *sql.DB
+    Redis      *redis.Client
+    L          *glog.Logger
+    TopicEnum  *model.TopicPersist
+    BaseDir    string
+    EndChan    chan os.Signal
+    LocalSaved = make(map[string]string)
 )
 
 const NilParser = "NilParser"
@@ -85,7 +86,7 @@ func (pst PostStatusType) Name() string {
 }
 
 func (pst PostStatusType) String() string {
-    return string(pst)
+    return strconv.Itoa(pst.Ordinal())
 }
 
 func (pst PostStatusType) Ordinal() int {

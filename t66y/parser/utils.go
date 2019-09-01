@@ -7,10 +7,12 @@ import (
     "os"
     "path"
     "path/filepath"
+    "regexp"
     "strconv"
     "strings"
 
     "github.com/PuerkitoBio/goquery"
+    "github.com/go-redis/redis"
 
     "github.com/Tomilla/imagespider/common"
     "github.com/Tomilla/imagespider/engine"
@@ -145,12 +147,15 @@ func SyncRedisAndLocalDatum(attr map[string]string, p engine.Post) bool {
     if err != nil {
         return false
     }
-
+    normalTitle := NormalizeName(title)
     if cntReply < p.CountReply {
-        dirNameOld := fmt.Sprintf(FileNameFormat, cntReply, p.CountImage, NormalizeName(title))
-        dirNameNew := fmt.Sprintf(FileNameFormat, p.CountReply, p.CountImage, NormalizeName(p.Title))
-        src := path.Join(BaseDir, dirNameOld)
-        dest := path.Join(BaseDir, dirNameNew)
+        dirNameOld, ok := common.LocalSaved[normalTitle]
+        if !ok {
+            dirNameOld = fmt.Sprintf(FileNameFormat, cntReply, p.CountImage, NormalizeName(title))
+        }
+        dirNameNew := fmt.Sprintf(FileNameFormat, p.CountReply, p.CountImage, normalTitle)
+        src := path.Join(ImageDir, dirNameOld)
+        dest := path.Join(ImageDir, dirNameNew)
         if glog.CheckPathExists(src) {
             err = os.Rename(src, dest)
             common.L.Infof("[Rename]: from %v to %v", src, dest)
@@ -162,7 +167,31 @@ func SyncRedisAndLocalDatum(attr map[string]string, p engine.Post) bool {
     return true
 }
 
-func GetLocalArchivedPosts(_path string) error {
+func LoadLocalSavedPosts(_path string) error {
+    replyAndImagePrefix := regexp.MustCompile(`^\[\d+\w]\[\d+\w]`)
+    err := filepath.Walk(_path, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if !info.IsDir() {
+            return nil
+        }
+        fileName := info.Name()
+        if replyAndImagePrefix.MatchString(fileName) {
+            fileNameNew := replyAndImagePrefix.ReplaceAllString(fileName, "")
+            common.LocalSaved[fileNameNew] = fileName
+            common.L.Info(fileNameNew)
+        }
+        return nil
+    })
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func GetLocalArchivedPostHTMLs(_path string) error {
     err := filepath.Walk(_path, func(path string, info os.FileInfo, err error) error {
         if err != nil {
             return err
@@ -184,7 +213,41 @@ func GetLocalArchivedPosts(_path string) error {
     return nil
 }
 
+func repairRedisKeys(keyPattern string, f func(string) string) error {
+    keys, err := common.Redis.Keys("19*_*_*").Result()
+    if err != nil {
+        return err
+    }
+    for _, key := range keys {
+        newKey := f(key)
+        _, err := common.Redis.Rename(key, newKey).Result()
+        if err != nil {
+            if err == redis.Nil {
+                common.L.Errorf("non-exist key: %v", key)
+            } else {
+                common.L.Errorf("rename failed(%v -> %v): %v", key, newKey, err)
+            }
+        }
+    }
+    return nil
+}
+
 func init() {
-    // err := GetLocalArchivedPosts(common.C.GetLogPath())
+    // load archive from local
+    // err := GetLocalArchivedPostHTMLs(common.C.GetLogPath())
     // common.L.Info(err)
+    // yearMonth := regexp.MustCompile(`^\d{4}_`)
+
+    // fix key format compatibility
+    // err := repairRedisKeys("19*_*_*", func (key string) string {
+    //     return yearMonth.ReplaceAllString(key, "")
+    // })
+    // if err != nil {
+    //     return
+    // }
+
+    err := LoadLocalSavedPosts(common.C.GetImageConfig().Path)
+    if err != nil {
+        common.L.Info(err)
+    }
 }

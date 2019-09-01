@@ -111,7 +111,7 @@ func (p PostListRequest) Parser(contents []byte, url string) *engine.ParseResult
                 attr = r.Val()
                 if _status, ok := attr[common.TopicEnum.Status]; ok {
                     if FinishPostStatus.Has(_status) {
-                        common.L.Infof("Ignore Saved Post: %v %v\n", post.Title, postColor)
+                        common.L.Infof("Ignore Post Which is marked as done: %v %v\n", post.Title, postColor)
                         return
                     }
                 }

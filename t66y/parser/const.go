@@ -16,7 +16,7 @@ var (
     includePostColor = set.New("green")
     ValidWebPageExt  = set.New("html", "htm")
     FinishPostStatus = set.New(common.PostImgAllDownloaded.String(), common.PostDone.String())
-    BaseDir          = common.C.GetImageConfig().Path
+    ImageDir         = common.C.GetImageConfig().Path
 )
 
 // from post
@@ -27,13 +27,13 @@ var (
     nonChineseEnglish = fmt.Sprintf(tmpChineseEnglish, `^`)
     // imageRe           = regexp.MustCompile(`(?i)(data-src|data-link|src)=['"](http[s]?://[^'"]+(jpg|png|jpeg|gif))['"]`)
     // titleRe             = regexp.MustCompile(`<title>([^>]+)(\s+-\s*\S+\s*\|\s*\S+\s*-\s*\S+\s*)</title>`)
-    postPathRe      = regexp.MustCompile(`(?i)_+|(?:html?_(?:data|mob)|[&=?]|[/\\])`)
-    postArchiveRe   = regexp.MustCompile(`(?i)(?P<Name>\d+_\d+_\d+)(?P<Ext>\.[a-z]+)?`)
-    postImageRe     = regexp.MustCompile(`(?i)(?:http|https):[^\s]*?(?:jpg|jpeg|png|gif)`)
-    viidiiImageRe   = regexp.MustCompile(`(?i)(?:http|https)://[^\s]+viidii[^\s]+(?:jpg|jpeg|png|gif)`)
-    quoteRe         = regexp.MustCompile(`(?:['"‘“])(.*?)(?:['"’”])`)
-    punctuationRe   = regexp.MustCompile(`(?:[(（{｛])(.*?)(?:\[\)）}｝])`)
-    halfToFullRe    = regexp.MustCompile(`(?:[［「【『〖])(.*?)(?:[］」】』〗])`)
+    postPathRe    = regexp.MustCompile(`(?i)_+|(?:html?_(?:data|mob)/\d{4}|[&=?]|[/\\])`)
+    postArchiveRe = regexp.MustCompile(`(?i)(?P<Name>\d+_\d+_\d+)(?P<Ext>\.[a-z]+)?`)
+    postImageRe   = regexp.MustCompile(`(?i)(?:http|https):[^\s]*?(?:jpg|jpeg|png|gif)`)
+    viidiiImageRe = regexp.MustCompile(`(?i)(?:http|https)://[^\s]+viidii[^\s]+(?:jpg|jpeg|png|gif)`)
+    quoteRe       = regexp.MustCompile(`(?:['"‘“])(.*?)(?:['"’”])`)
+    punctuationRe = regexp.MustCompile(`(?:[(（{｛])(.*?)(?:\[\)）}｝])`)
+    halfToFullRe  = regexp.MustCompile(`(?:[［「【『〖])(.*?)(?:[］」】』〗])`)
     tagBracketRe    = regexp.MustCompile(`\[.{0,6}]`)
     nonTagBracketRe = regexp.MustCompile(`\[(.*?)]`)
     whiteSpaceRe        = regexp.MustCompile(`\s+`)
