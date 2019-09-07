@@ -31,6 +31,7 @@ func NewGenerator(realms []string) chan engine.BaseParser {
         stopPageNum:  stop,
     }
     g.requestChan = make(chan engine.BaseParser)
+    g.count = g.startPageNum
     go g.Generate()
     return g.requestChan
 }

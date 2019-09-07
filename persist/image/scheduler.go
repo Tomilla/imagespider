@@ -49,7 +49,7 @@ func (s *scheduler) schedule() {
                 log.Printf("[Downloader worker] #%d downloaded [workQ len %d cap %d], [readyQ len %d cap %d]\n",
                     v, len(workQ), cap(workQ), len(readyQ), cap(readyQ))
 
-                if len(workQ) == 0 && (len(readyQ) == s.workerCount || len(readyQ) == 0) {
+                if len(workQ) == 0 && len(readyQ) == 0 {
                     fmt.Println("[All End]")
                     common.EndChan <- os.Kill
                 }
